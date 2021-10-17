@@ -2,8 +2,19 @@ name: .NET - Build, test and publish reusable workflow
 
 on:
   workflow_call:
+    inputs:
+      dotnet-version:
+        default: '6.0.x'
+        required: false
+        type: string
+        
+      include-prerelease:
+        default: 'true'
+        required: false
+        type: string
+        
     secrets:
-      NUGET_KEY:
+      nuget-key:
         required: true
 
 jobs:
@@ -30,8 +41,8 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: '6.0.x'
-        include-prerelease: true
+        dotnet-version: ${{ inputs.dotnet-version }}
+        include-prerelease: ${{ inputs.include-prerelease }}
       
     - name: Generate Package Release Notes
       run: |
@@ -56,6 +67,6 @@ jobs:
           contains(join(github.event.commits.*.message), 'perf:')
       run: dotnet nuget push
         src\**.nupkg
-        --api-key ${{ secrets.NUGET_KEY }}
+        --api-key ${{ secrets.nuget-key }}
         --source https://api.nuget.org/v3/index.json
         --skip-duplicate
