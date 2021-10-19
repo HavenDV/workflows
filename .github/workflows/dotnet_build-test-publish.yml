@@ -9,7 +9,7 @@ on:
         type: string
         
       include-prerelease:
-        default: 'true'
+        default: true
         required: false
         type: boolean
         
@@ -19,7 +19,7 @@ on:
         type: string
         
       fetch-depth:
-        default: '50'
+        default: 50
         required: false
         type: number
         
