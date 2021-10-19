@@ -11,12 +11,17 @@ on:
       include-prerelease:
         default: 'true'
         required: false
-        type: string
+        type: boolean
         
       os:
         default: 'ubuntu-latest'
         required: false
         type: string
+        
+      fetch-depth:
+        default: '50'
+        required: false
+        type: number
         
     secrets:
       nuget-key:
@@ -33,7 +38,7 @@ jobs:
     - name: Getting code
       uses: actions/checkout@v2
       with: 
-        fetch-depth: 50
+        fetch-depth: ${{ inputs.fetch-depth }}
 
     - name: Generate build number
       if: contains(join(github.event.commits.*.message), 'fix:') || 
