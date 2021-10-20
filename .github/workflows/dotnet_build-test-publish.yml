@@ -28,6 +28,21 @@ on:
         required: false
         type: boolean
         
+      build-with-msbuild:
+        default: false
+        required: false
+        type: boolean
+        
+      vs-prerelease:
+        default: true
+        required: false
+        type: boolean
+        
+      run-tests:
+        default: true
+        required: false
+        type: boolean
+        
     secrets:
       nuget-key:
         required: true
@@ -60,6 +75,12 @@ jobs:
         dotnet-version: ${{ inputs.dotnet-version }}
         include-prerelease: ${{ inputs.include-prerelease }}
       
+    - name: Setup MSBuild
+      if: ${{ inputs.build-with-msbuild }}
+      uses: microsoft/setup-msbuild@v1.0.3
+      with:
+        vs-prerelease: ${{ inputs.vs-prerelease }}
+      
     - name: Generate Package Release Notes
       run: |
         echo 'PACKAGE_RELEASE_NOTES<<EOF' >> $GITHUB_ENV
@@ -71,11 +92,23 @@ jobs:
         echo '' >> $GITHUB_ENV
         echo 'EOF' >> $GITHUB_ENV
     
-    - name: Build
-      run: dotnet build --configuration Release --nologo
-    
+    - name: Build using dotnet
+      if: ${{ !inputs.build-with-msbuild }}
+      run: dotnet build
+        --configuration Release
+        --nologo
+
+    - name: Build using MSBuild
+      if: ${{ inputs.build-with-msbuild }}
+      run: msbuild
+        /property:Configuration=Release
+        /restore
+
     - name: Run tests
-      run: dotnet test --configuration Release --nologo
+      if: ${{ inputs.run-tests }}
+      run: dotnet test
+        --configuration Release
+        --nologo
         
     - name: Publish
       if: ${{ !inputs.conventional-commits-publish-conditions }} ||
