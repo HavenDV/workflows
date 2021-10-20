@@ -23,6 +23,11 @@ on:
         required: false
         type: number
         
+      conventional-commits-publish-conditions:
+        default: true
+        required: false
+        type: boolean
+        
     secrets:
       nuget-key:
         required: true
@@ -41,7 +46,8 @@ jobs:
         fetch-depth: ${{ inputs.fetch-depth }}
 
     - name: Generate build number
-      if: contains(join(github.event.commits.*.message), 'fix:') || 
+      if: ${{ !conventional-commits-publish-conditions }} ||
+          contains(join(github.event.commits.*.message), 'fix:') || 
           contains(join(github.event.commits.*.message), 'feat:') || 
           contains(join(github.event.commits.*.message), 'perf:')
       uses: einaregilsson/build-number@v3
@@ -72,7 +78,8 @@ jobs:
       run: dotnet test --configuration Release --nologo
         
     - name: Publish
-      if: contains(join(github.event.commits.*.message), 'fix:') || 
+      if: ${{ !conventional-commits-publish-conditions }} ||
+          contains(join(github.event.commits.*.message), 'fix:') || 
           contains(join(github.event.commits.*.message), 'feat:') || 
           contains(join(github.event.commits.*.message), 'perf:')
       run: dotnet nuget push
