@@ -1,3 +1,16 @@
+# Using
+```yaml
+name: Build, test and publish
+on: [ push ]
+
+jobs:
+  build-test-publish:
+    name: Build, test and publish
+    uses: HavenDV/workflows/.github/workflows/dotnet_build-test-publish.yml@main
+    secrets:
+      nuget-key: ${{ secrets.NUGET_KEY }}
+```
+
 # Explanation
 ## [Build, test and publish](.github/workflows/dotnet_build-test-publish.yml)
 This workflow is for developing and releasing a NuGet package by a small number of people on the same branch.  
