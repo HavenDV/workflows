@@ -46,7 +46,7 @@ jobs:
         fetch-depth: ${{ inputs.fetch-depth }}
 
     - name: Generate build number
-      if: ${{ !conventional-commits-publish-conditions }} ||
+      if: ${{ !inputs.conventional-commits-publish-conditions }} ||
           contains(join(github.event.commits.*.message), 'fix:') || 
           contains(join(github.event.commits.*.message), 'feat:') || 
           contains(join(github.event.commits.*.message), 'perf:')
@@ -78,7 +78,7 @@ jobs:
       run: dotnet test --configuration Release --nologo
         
     - name: Publish
-      if: ${{ !conventional-commits-publish-conditions }} ||
+      if: ${{ !inputs.conventional-commits-publish-conditions }} ||
           contains(join(github.event.commits.*.message), 'fix:') || 
           contains(join(github.event.commits.*.message), 'feat:') || 
           contains(join(github.event.commits.*.message), 'perf:')
