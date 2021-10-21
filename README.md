@@ -20,5 +20,22 @@ It automatically generates a build number (BUILD_NUMBER environment variable).
 It also automatically generates Package Release Notes based on the latest commits (PACKAGE_RELEASE_NOTES environment variable).  
 Requires a nuget-key secret that will be able to load your NuGet packages.  
 
+### Inputs
+| name                                        | type    | default            |
+|---------------------------------------------|---------|--------------------|
+| dotnet-version                              | string  | '6.0.x'            |
+| include-prerelease                          | boolean | true               |
+| os                                          | string  | 'ubuntu-latest'    |
+| fetch-depth                                 | number  | 50                 |
+| conventional-commits-publish-conditions     | boolean | true               |
+| build-with-msbuild                          | boolean | false              |
+| vs-prerelease                               | boolean | true               |
+| run-tests                                   | boolean | true               |
+   
+### Secrets
+| name                                        | type    |
+|---------------------------------------------|---------|
+| nuget-key                                   | string  |
+
 # Contacts
 * [mail](mailto:havendv@gmail.com)
