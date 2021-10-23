@@ -33,43 +33,24 @@ It also automatically generates Package Release Notes based on the latest commit
 Requires a nuget-key secret that will be able to load your NuGet packages.  
 
 ### Inputs
-| name                                        | type    | default            |
-|---------------------------------------------|---------|--------------------|
-| dotnet-version                              | string  | '6.0.x'            |
-| include-prerelease                          | boolean | true               |
-| os                                          | string  | 'ubuntu-latest'    |
-| fetch-depth                                 | number  | 50                 |
-| conventional-commits-publish-conditions     | boolean | true               |
-| build-with-msbuild                          | boolean | false              |
-| vs-prerelease                               | boolean | true               |
-| run-tests                                   | boolean | true               |
-   
-### Secrets
-| name                                        | type    |
-|---------------------------------------------|---------|
-| nuget-key                                   | string  |
-
-## [Build, test and release](.github/workflows/dotnet_build-test-release.yml)
-This workflow is for developing and releasing a installer by a small number of people on the same branch.  
-It is based on the [Conventional Commits specification](https://www.conventionalcommits.org/) and 
-will only release new releases if they contain fix/feat/perf commit types.  
-It automatically generates a build number (BUILD_NUMBER environment variable).  
-It also automatically generates Release Notes based on the latest commits (PACKAGE_RELEASE_NOTES environment variable).  
-
-### Inputs
 | name                                        | type    | default             |
 |---------------------------------------------|---------|---------------------|
 | dotnet-version                              | string  | '6.0.x'             |
 | include-prerelease                          | boolean | true                |
-| os                                          | string  | 'windows-latest'    |
+| os                                          | string  | 'ubuntu-latest'     |
 | fetch-depth                                 | number  | 50                  |
-| conventional-commits-release-conditions     | boolean | true                |
+| conventional-commits-publish-conditions     | boolean | true                |
 | build-with-msbuild                          | boolean | false               |
 | vs-prerelease                               | boolean | true                |
 | run-tests                                   | boolean | true                |
 | asset-content-type                          | string  | 'application/x-msi' |
-| asset-path                                  | string  | `required`          |
-| asset-name                                  | string  | `required`          |
+| asset-path                                  | string  | ''                  |
+| asset-name                                  | string  | ''                  |
+   
+### Secrets
+| name                                        | type    | default             |
+|---------------------------------------------|---------|---------------------|
+| nuget-key                                   | string  | ''                  |
 
 # Contacts
 * [mail](mailto:havendv@gmail.com)

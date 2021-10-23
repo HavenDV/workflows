@@ -4,48 +4,63 @@ on:
   workflow_call:
     inputs:
       dotnet-version:
-        default: '6.0.x'
         required: false
         type: string
+        default: '6.0.x'
         
       include-prerelease:
-        default: true
         required: false
         type: boolean
+        default: true
         
       os:
-        default: 'ubuntu-latest'
         required: false
         type: string
+        default: 'ubuntu-latest'
         
       fetch-depth:
-        default: 50
         required: false
         type: number
+        default: 50
         
       conventional-commits-publish-conditions:
-        default: true
         required: false
         type: boolean
+        default: true
         
       build-with-msbuild:
-        default: false
         required: false
         type: boolean
+        default: false
         
       vs-prerelease:
-        default: true
         required: false
         type: boolean
+        default: true
         
       run-tests:
-        default: true
         required: false
         type: boolean
+        default: true
+        
+      asset-path:
+        required: false
+        type: string
+        default: ''
+        
+      asset-name:
+        required: false
+        type: string
+        default: ''
+        
+      asset-content-type:
+        required: false
+        type: string
+        default: 'application/x-msi'
         
     secrets:
       nuget-key:
-        required: true
+        required: false
 
 jobs:
   build:
@@ -123,13 +138,42 @@ jobs:
         --configuration Release
         --nologo
         
-    - name: Publish
-      if: ${{ !inputs.conventional-commits-publish-conditions }} ||
+    - name: Publish to NuGet
+      if: ${{ secrets.nuget-key != '' }} &&
+          ( ${{ !inputs.conventional-commits-publish-conditions }} ||
           contains(join(github.event.commits.*.message), 'fix:') || 
           contains(join(github.event.commits.*.message), 'feat:') || 
-          contains(join(github.event.commits.*.message), 'perf:')
+          contains(join(github.event.commits.*.message), 'perf:'))
       run: dotnet nuget push
         src\**.nupkg
         --api-key ${{ secrets.nuget-key }}
         --source https://api.nuget.org/v3/index.json
         --skip-duplicate
+        
+    - name: Create Release
+      if: ${{ inputs.asset-path != '' }} &&
+          ( ${{ !inputs.conventional-commits-publish-conditions }} ||
+          contains(join(github.event.commits.*.message), 'fix:') || 
+          contains(join(github.event.commits.*.message), 'feat:') || 
+          contains(join(github.event.commits.*.message), 'perf:'))
+      id: create_release
+      uses: zendesk/action-create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        body: ${{ env.PACKAGE_RELEASE_NOTES }}
+
+    - name: Upload Asset
+      if: ${{ inputs.asset-path != '' }} &&
+          ( ${{ !inputs.conventional-commits-publish-conditions }} ||
+          contains(join(github.event.commits.*.message), 'fix:') || 
+          contains(join(github.event.commits.*.message), 'feat:') || 
+          contains(join(github.event.commits.*.message), 'perf:'))
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ${{ inputs.asset-path }}
+        asset_name: ${{ inputs.asset-name }}
+        asset_content_type: ${{ inputs.asset-content-type }}
