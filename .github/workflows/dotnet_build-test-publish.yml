@@ -96,7 +96,7 @@ jobs:
       with:
         vs-prerelease: ${{ inputs.vs-prerelease }}
       
-    - name: Generate Release Notes
+    - name: Generate Release Notes on windows systems
       if: ${{ inputs.os == 'windows-latest' }}
       run: |
         echo 'PACKAGE_RELEASE_NOTES<<EOF' >> $env:GITHUB_ENV
@@ -108,7 +108,7 @@ jobs:
         echo '' >> $env:GITHUB_ENV
         echo 'EOF' >> $env:GITHUB_ENV
         
-    - name: Generate Release Notes
+    - name: Generate Release Notes on non-windows systems
       if: ${{ inputs.os != 'windows-latest' }}
       run: |
         echo 'PACKAGE_RELEASE_NOTES<<EOF' >> $GITHUB_ENV
@@ -139,7 +139,7 @@ jobs:
         --nologo
         
     - name: Publish to NuGet
-      if: contains(secrets, 'nuget-key') &&
+      if: ${{ secrets.nuget-key }} &&
           ( ${{ !inputs.conventional-commits-publish-conditions }} ||
           contains(join(github.event.commits.*.message), 'fix:') || 
           contains(join(github.event.commits.*.message), 'feat:') || 
