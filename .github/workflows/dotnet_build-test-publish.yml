@@ -66,14 +66,16 @@ jobs:
   build:
     runs-on: ${{ inputs.os }}
     name: Build, test and publish
-    env:
-      DOTNET_NOLOGO: true
+    outputs:
       CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS: 
         ${{ !inputs.conventional-commits-publish-conditions || 
         contains(join(github.event.commits.*.message), 'fix:') || 
         contains(join(github.event.commits.*.message), 'feat:') || 
         contains(join(github.event.commits.*.message), 'perf:') }}
       PUBLISH-TO-NUGET: ${{ !!secrets.nuget-key }}
+  
+    env:
+      DOTNET_NOLOGO: true
     
     steps:
     - name: Getting code
@@ -82,7 +84,7 @@ jobs:
         fetch-depth: ${{ inputs.fetch-depth }}
 
     - name: Generate build number
-      if: ${{ env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS }}
+      if: ${{ outputs.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS }}
       uses: einaregilsson/build-number@v3
       with:
         token: ${{ secrets.github_token }}  
@@ -142,9 +144,7 @@ jobs:
         --nologo
         
     - name: Publish to NuGet
-      if: ${{ env.PUBLISH-TO-NUGET && env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS }}
-      env:
-        PUBLISH: ${{ steps.compute-conventional-commits-publish-conditions.outputs.publish }}
+      if: ${{ outputs.PUBLISH-TO-NUGET && outputs.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS }}
       run: dotnet nuget push
         src\**.nupkg
         --skip-duplicate
@@ -152,7 +152,7 @@ jobs:
         --api-key ${{ secrets.nuget-key }}
         
     - name: Create Release
-      if: ${{ inputs.asset-path != '' && env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS }}
+      if: ${{ inputs.asset-path != '' && outputs.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS }}
       id: create_release
       uses: zendesk/action-create-release@v1
       env:
@@ -161,7 +161,7 @@ jobs:
         body: ${{ env.PACKAGE_RELEASE_NOTES }}
 
     - name: Upload Asset
-      if: ${{ inputs.asset-path != '' && env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS }}
+      if: ${{ inputs.asset-path != '' && outputs.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS }}
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
