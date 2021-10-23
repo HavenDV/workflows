@@ -9,6 +9,18 @@ jobs:
     uses: HavenDV/workflows/.github/workflows/dotnet_build-test-publish.yml@main
     secrets:
       nuget-key: ${{ secrets.NUGET_KEY }}
+
+
+name: Build, test and release
+on: [ push ]
+
+jobs:
+  build-test-release:
+    name: Build, test and release
+    uses: HavenDV/workflows/.github/workflows/dotnet_build-test-release.yml@main
+    with:
+      asset-path: src/installers/UpworkPdfGenerator.Installers.Wpf.NetFramework/UpworkPdfGenerator.msi
+      asset-name: UpworkPdfGenerator.msi
 ```
 
 # Explanation
@@ -36,6 +48,28 @@ Requires a nuget-key secret that will be able to load your NuGet packages.
 | name                                        | type    |
 |---------------------------------------------|---------|
 | nuget-key                                   | string  |
+
+## [Build, test and release](.github/workflows/dotnet_build-test-release.yml)
+This workflow is for developing and releasing a installer by a small number of people on the same branch.  
+It is based on the [Conventional Commits specification](https://www.conventionalcommits.org/) and 
+will only release new releases if they contain fix/feat/perf commit types.  
+It automatically generates a build number (BUILD_NUMBER environment variable).  
+It also automatically generates Release Notes based on the latest commits (PACKAGE_RELEASE_NOTES environment variable).  
+
+### Inputs
+| name                                        | type    | default             |
+|---------------------------------------------|---------|---------------------|
+| dotnet-version                              | string  | '6.0.x'             |
+| include-prerelease                          | boolean | true                |
+| os                                          | string  | 'windows-latest'    |
+| fetch-depth                                 | number  | 50                  |
+| conventional-commits-release-conditions     | boolean | true                |
+| build-with-msbuild                          | boolean | false               |
+| vs-prerelease                               | boolean | true                |
+| run-tests                                   | boolean | true                |
+| asset-content-type                          | string  | 'application/x-msi' |
+| asset-path                                  | string  | `required`          |
+| asset-name                                  | string  | `required`          |
 
 # Contacts
 * [mail](mailto:havendv@gmail.com)
