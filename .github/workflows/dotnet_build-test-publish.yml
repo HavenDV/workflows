@@ -139,8 +139,7 @@ jobs:
         --nologo
         
     - name: Publish to NuGet
-      if: ${{ secrets.nuget-key }} &&
-          ( ${{ !inputs.conventional-commits-publish-conditions }} ||
+      if: ( ${{ !inputs.conventional-commits-publish-conditions }} ||
           contains(join(github.event.commits.*.message), 'fix:') || 
           contains(join(github.event.commits.*.message), 'feat:') || 
           contains(join(github.event.commits.*.message), 'perf:'))
