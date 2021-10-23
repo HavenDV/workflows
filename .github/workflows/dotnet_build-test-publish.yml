@@ -78,7 +78,7 @@ jobs:
         contains(join(github.event.commits.*.message), 'fix:') || 
         contains(join(github.event.commits.*.message), 'feat:') || 
         contains(join(github.event.commits.*.message), 'perf:') }}
-      PUBLISH-TO-NUGET: ${{ secrets.nuget-key }}
+      PUBLISH-TO-NUGET: ${{ !!secrets.nuget-key }}
     
     steps:
     - name: Getting code
