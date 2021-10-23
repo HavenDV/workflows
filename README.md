@@ -43,7 +43,6 @@ Requires a nuget-key secret that will be able to load your NuGet packages.
 | build-with-msbuild                          | boolean | false               |
 | vs-prerelease                               | boolean | true                |
 | run-tests                                   | boolean | true                |
-| publish-to-nuget                            | boolean | true                |
 | asset-content-type                          | string  | 'application/x-msi' |
 | asset-path                                  | string  | ''                  |
 | asset-name                                  | string  | ''                  |

@@ -43,11 +43,6 @@ on:
         type: boolean
         default: true
         
-      publish-to-nuget:
-        required: false
-        type: boolean
-        default: true
-        
       asset-path:
         required: false
         type: string
@@ -147,7 +142,7 @@ jobs:
         --nologo
         
     - name: Publish to NuGet
-      if: ${{ inputs.publish-to-nuget && env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS }}
+      if: ${{ env.PUBLISH-TO-NUGET && env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS }}
       env:
         PUBLISH: ${{ steps.compute-conventional-commits-publish-conditions.outputs.publish }}
       run: dotnet nuget push
