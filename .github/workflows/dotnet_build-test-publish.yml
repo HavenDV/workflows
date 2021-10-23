@@ -66,16 +66,14 @@ jobs:
   build:
     runs-on: ${{ inputs.os }}
     name: Build, test and publish
-    outputs:
+    env:
+      DOTNET_NOLOGO: true
       CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS: 
         ${{ !inputs.conventional-commits-publish-conditions || 
         contains(join(github.event.commits.*.message), 'fix:') || 
         contains(join(github.event.commits.*.message), 'feat:') || 
         contains(join(github.event.commits.*.message), 'perf:') }}
       PUBLISH-TO-NUGET: ${{ !!secrets.nuget-key }}
-  
-    env:
-      DOTNET_NOLOGO: true
     
     steps:
     - name: Getting code
@@ -84,7 +82,7 @@ jobs:
         fetch-depth: ${{ inputs.fetch-depth }}
 
     - name: Generate build number
-      if: ${{ outputs.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS }}
+      if: env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true'
       uses: einaregilsson/build-number@v3
       with:
         token: ${{ secrets.github_token }}  
@@ -144,7 +142,9 @@ jobs:
         --nologo
         
     - name: Publish to NuGet
-      if: ${{ outputs.PUBLISH-TO-NUGET && outputs.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS }}
+      if: ${{ env.PUBLISH-TO-NUGET == 'true' && env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true' }}
+      env:
+        PUBLISH: ${{ steps.compute-conventional-commits-publish-conditions.outputs.publish }}
       run: dotnet nuget push
         src\**.nupkg
         --skip-duplicate
@@ -152,7 +152,7 @@ jobs:
         --api-key ${{ secrets.nuget-key }}
         
     - name: Create Release
-      if: ${{ inputs.asset-path != '' && outputs.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS }}
+      if: ${{ inputs.asset-path != '' && env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true' }}
       id: create_release
       uses: zendesk/action-create-release@v1
       env:
@@ -161,7 +161,7 @@ jobs:
         body: ${{ env.PACKAGE_RELEASE_NOTES }}
 
     - name: Upload Asset
-      if: ${{ inputs.asset-path != '' && outputs.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS }}
+      if: ${{ inputs.asset-path != '' && env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true' }}
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
