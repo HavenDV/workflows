@@ -144,7 +144,7 @@ jobs:
         --nologo
         
     - name: Publish to NuGet
-      if: ${{ inputs.publish-to-nuget }} && (
+      if: ${{ !!inputs.publish-to-nuget }} && (
           ${{ !inputs.conventional-commits-publish-conditions }} ||
           contains(join(github.event.commits.*.message), 'fix:') || 
           contains(join(github.event.commits.*.message), 'feat:') || 
@@ -156,8 +156,8 @@ jobs:
         --api-key ${{ secrets.nuget-key }}
         
     - name: Create Release
-      if: ${{ inputs.asset-path != '' }} &&
-          ( ${{ !inputs.conventional-commits-publish-conditions }} ||
+      if: ${{ inputs.asset-path != '' }} && (
+          ${{ !inputs.conventional-commits-publish-conditions }} ||
           contains(join(github.event.commits.*.message), 'fix:') || 
           contains(join(github.event.commits.*.message), 'feat:') || 
           contains(join(github.event.commits.*.message), 'perf:'))
@@ -169,8 +169,8 @@ jobs:
         body: ${{ env.PACKAGE_RELEASE_NOTES }}
 
     - name: Upload Asset
-      if: ${{ inputs.asset-path != '' }} &&
-          ( ${{ !inputs.conventional-commits-publish-conditions }} ||
+      if: ${{ inputs.asset-path != '' }} && (
+          ${{ !inputs.conventional-commits-publish-conditions }} ||
           contains(join(github.event.commits.*.message), 'fix:') || 
           contains(join(github.event.commits.*.message), 'feat:') || 
           contains(join(github.event.commits.*.message), 'perf:'))
