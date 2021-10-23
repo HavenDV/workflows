@@ -146,8 +146,8 @@ jobs:
     - name: Compute conventinal commits publish conditions
       id: compute-conventional-commits-publish-conditions
       env:
-        value: ${{ !inputs.conventional-commits-publish-conditions || contains(join(github.event.commits.*.message), 'fix:') || contains(join(github.event.commits.*.message), 'feat:') || contains(join(github.event.commits.*.message), 'perf:') }}
-      run: echo "::set-output name=publish::$JOB_CONTEXT"
+        VALUE: ${{ !inputs.conventional-commits-publish-conditions || contains(join(github.event.commits.*.message), 'fix:') || contains(join(github.event.commits.*.message), 'feat:') || contains(join(github.event.commits.*.message), 'perf:') }}
+      run: echo "::set-output name=publish::$VALUE"
         
     - name: Publish to NuGet
       if: ${{ inputs.publish-to-nuget }} &&
