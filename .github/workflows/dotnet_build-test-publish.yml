@@ -73,7 +73,12 @@ jobs:
     name: Build, test and publish
     env:
       DOTNET_NOLOGO: true
-      CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS: ${{ !inputs.conventional-commits-publish-conditions || contains(join(github.event.commits.*.message), 'fix:') || contains(join(github.event.commits.*.message), 'feat:') || contains(join(github.event.commits.*.message), 'perf:') }}
+      CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS: 
+        ${{ !inputs.conventional-commits-publish-conditions || 
+        contains(join(github.event.commits.*.message), 'fix:') || 
+        contains(join(github.event.commits.*.message), 'feat:') || 
+        contains(join(github.event.commits.*.message), 'perf:') }}
+      PUBLISH-TO-NUGET: ${{ secrets.nuget-key }}
     
     steps:
     - name: Getting code
@@ -82,10 +87,7 @@ jobs:
         fetch-depth: ${{ inputs.fetch-depth }}
 
     - name: Generate build number
-      if: ${{ !inputs.conventional-commits-publish-conditions }} ||
-          contains(join(github.event.commits.*.message), 'fix:') || 
-          contains(join(github.event.commits.*.message), 'feat:') || 
-          contains(join(github.event.commits.*.message), 'perf:')
+      if: ${{ env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS }}
       uses: einaregilsson/build-number@v3
       with:
         token: ${{ secrets.github_token }}  
