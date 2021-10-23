@@ -55,10 +55,6 @@ on:
         default: 'application/x-msi'
         required: false
         type: string
-        
-    secrets:
-      nuget-key:
-        required: true
 
 jobs:
   build:
