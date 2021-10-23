@@ -144,11 +144,11 @@ jobs:
         --nologo
         
     - name: Publish to NuGet
-      if: ${{ inputs.publish-to-nuget }} &&
-          ( ${{ !inputs.conventional-commits-publish-conditions }} ||
-          contains(join(github.event.commits.*.message), 'fix:') || 
-          contains(join(github.event.commits.*.message), 'feat:') || 
-          contains(join(github.event.commits.*.message), 'perf:'))
+      if: ${{ inputs.publish-to-nuget }} #&&
+          #( ${{ !inputs.conventional-commits-publish-conditions }} ||
+          #contains(join(github.event.commits.*.message), 'fix:') || 
+          #contains(join(github.event.commits.*.message), 'feat:') || 
+          #contains(join(github.event.commits.*.message), 'perf:'))
       run: dotnet nuget push
         src\**.nupkg
         --skip-duplicate
