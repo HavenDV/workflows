@@ -14,7 +14,7 @@ on:
         type: boolean
         
       os:
-        default: 'ubuntu-latest'
+        default: 'windows-latest'
         required: false
         type: string
         
