@@ -73,6 +73,7 @@ jobs:
     name: Build, test and publish
     env:
       DOTNET_NOLOGO: true
+      CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS: ${{ !inputs.conventional-commits-publish-conditions || contains(join(github.event.commits.*.message), 'fix:') || contains(join(github.event.commits.*.message), 'feat:') || contains(join(github.event.commits.*.message), 'perf:') }}
     
     steps:
     - name: Getting code
@@ -143,15 +144,8 @@ jobs:
         --configuration Release
         --nologo
         
-    - name: Compute conventinal commits publish conditions
-      id: compute-conventional-commits-publish-conditions
-      env:
-        VALUE: ${{ !inputs.conventional-commits-publish-conditions || contains(join(github.event.commits.*.message), 'fix:') || contains(join(github.event.commits.*.message), 'feat:') || contains(join(github.event.commits.*.message), 'perf:') }}
-      run: echo "::set-output name=publish::$VALUE"
-        
     - name: Publish to NuGet
-      if: ${{ inputs.publish-to-nuget }} &&
-          ${{ steps.compute-conventional-commits-publish-conditions.outputs.publish }}
+      if: ${{ inputs.publish-to-nuget && env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS }}
       env:
         PUBLISH: ${{ steps.compute-conventional-commits-publish-conditions.outputs.publish }}
       run: dotnet nuget push
@@ -161,8 +155,7 @@ jobs:
         --api-key ${{ secrets.nuget-key }}
         
     - name: Create Release
-      if: ${{ inputs.asset-path != '' }} &&
-          ${{ steps.compute-conventional-commits-publish-conditions.outputs.publish }}
+      if: ${{ inputs.asset-path != '' && env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS }}
       id: create_release
       uses: zendesk/action-create-release@v1
       env:
@@ -171,8 +164,7 @@ jobs:
         body: ${{ env.PACKAGE_RELEASE_NOTES }}
 
     - name: Upload Asset
-      if: ${{ inputs.asset-path != '' }} &&
-          ${{ steps.compute-conventional-commits-publish-conditions.outputs.publish }}
+      if: ${{ inputs.asset-path != '' && env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS }}
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
