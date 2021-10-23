@@ -81,7 +81,20 @@ jobs:
       with:
         vs-prerelease: ${{ inputs.vs-prerelease }}
       
-    - name: Generate Package Release Notes
+    - name: Generate Release Notes
+      if: ${{ inputs.os == 'windows-latest' }}
+      run: |
+        echo 'PACKAGE_RELEASE_NOTES<<EOF' >> $env:GITHUB_ENV
+        echo '⭐ Last 10 features:' >> $env:GITHUB_ENV
+        git log -10 --pretty=format:"- %s %cs" --grep=feat >> $env:GITHUB_ENV
+        echo '' >> $env:GITHUB_ENV
+        echo '🐞 Last 10 bug fixes:' >> $env:GITHUB_ENV
+        git log -10 --pretty=format:"- %s %cs" --grep=fix >> $env:GITHUB_ENV
+        echo '' >> $env:GITHUB_ENV
+        echo 'EOF' >> $env:GITHUB_ENV
+        
+    - name: Generate Release Notes
+      if: ${{ inputs.os != 'windows-latest' }}
       run: |
         echo 'PACKAGE_RELEASE_NOTES<<EOF' >> $GITHUB_ENV
         echo '⭐ Last 10 features:' >> $GITHUB_ENV
