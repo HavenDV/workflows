@@ -6,7 +6,7 @@ on:
       dotnet-version:
         required: false
         type: string
-        default: '6.0.x'
+        default: 6.0.x
         
       include-prerelease:
         required: false
@@ -16,7 +16,7 @@ on:
       os:
         required: false
         type: string
-        default: 'ubuntu-latest'
+        default: ubuntu-latest
         
       fetch-depth:
         required: false
@@ -61,7 +61,7 @@ on:
       asset-content-type1:
         required: false
         type: string
-        default: 'application/x-msi'
+        default: application/x-msi
         
       asset-path2:
         required: false
@@ -76,7 +76,7 @@ on:
       asset-content-type2:
         required: false
         type: string
-        default: 'application/x-msi'
+        default: application/x-msi
         
       asset-path3:
         required: false
@@ -91,7 +91,7 @@ on:
       asset-content-type3:
         required: false
         type: string
-        default: 'application/x-msi'
+        default: application/x-msi
         
     secrets:
       nuget-key:
