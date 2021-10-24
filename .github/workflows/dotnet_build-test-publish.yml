@@ -195,8 +195,9 @@ jobs:
         /restore
 
     - name: Run tests
-      if: ${{ inputs.run-tests }}
+      if: ${{ inputs.run-tests && !inputs.use-msbuild }}
       run: dotnet test
+        ${{ inputs.project-path }}
         --configuration ${{ inputs.configuration }}
         --nologo
         
