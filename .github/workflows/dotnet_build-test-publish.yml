@@ -43,17 +43,47 @@ on:
         type: boolean
         default: true
         
-      asset-path:
+      asset-path1:
         required: false
         type: string
         default: ''
         
-      asset-name:
+      asset-name1:
         required: false
         type: string
         default: ''
         
-      asset-content-type:
+      asset-content-type1:
+        required: false
+        type: string
+        default: 'application/x-msi'
+        
+      asset-path2:
+        required: false
+        type: string
+        default: ''
+        
+      asset-name2:
+        required: false
+        type: string
+        default: ''
+        
+      asset-content-type2:
+        required: false
+        type: string
+        default: 'application/x-msi'
+        
+      asset-path3:
+        required: false
+        type: string
+        default: ''
+        
+      asset-name3:
+        required: false
+        type: string
+        default: ''
+        
+      asset-content-type3:
         required: false
         type: string
         default: 'application/x-msi'
@@ -152,7 +182,7 @@ jobs:
         --api-key ${{ secrets.nuget-key }}
         
     - name: Create Release
-      if: ${{ inputs.asset-path != '' && env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true' }}
+      if: ${{ inputs.asset-path1 != '' && env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true' }}
       id: create_release
       uses: zendesk/action-create-release@v1
       env:
@@ -160,13 +190,35 @@ jobs:
       with:
         body: ${{ env.PACKAGE_RELEASE_NOTES }}
 
-    - name: Upload Asset
-      if: ${{ inputs.asset-path != '' && env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true' }}
+    - name: Upload Asset 1
+      if: ${{ inputs.asset-path1 != '' && env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true' }}
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ${{ inputs.asset-path }}
-        asset_name: ${{ inputs.asset-name }}
-        asset_content_type: ${{ inputs.asset-content-type }}
+        asset_path: ${{ inputs.asset-path1 }}
+        asset_name: ${{ inputs.asset-name1 }}
+        asset_content_type: ${{ inputs.asset-content-type1 }}
+
+    - name: Upload Asset 2
+      if: ${{ inputs.asset-path2 != '' && env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true' }}
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ${{ inputs.asset-path2 }}
+        asset_name: ${{ inputs.asset-name2 }}
+        asset_content_type: ${{ inputs.asset-content-type2 }}
+
+    - name: Upload Asset 3
+      if: ${{ inputs.asset-path3 != '' && env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true' }}
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ${{ inputs.asset-path3 }}
+        asset_name: ${{ inputs.asset-name3 }}
+        asset_content_type: ${{ inputs.asset-content-type3 }}
