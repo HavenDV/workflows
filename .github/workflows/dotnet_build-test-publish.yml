@@ -3,6 +3,11 @@ name: .NET - Build, test and publish reusable workflow
 on:
   workflow_call:
     inputs:
+      os:
+        required: false
+        type: string
+        default: ubuntu-latest
+
       dotnet-version:
         required: false
         type: string
@@ -18,11 +23,6 @@ on:
         type: boolean
         default: true
         
-      os:
-        required: false
-        type: string
-        default: ubuntu-latest
-        
       fetch-depth:
         required: false
         type: number
@@ -32,6 +32,11 @@ on:
         required: false
         type: boolean
         default: true
+        
+      project-path:
+        required: false
+        type: string
+        default: ''
         
       configuration:
         required: false
@@ -178,12 +183,14 @@ jobs:
     - name: Build using dotnet
       if: ${{ !inputs.use-msbuild }}
       run: dotnet build
+        ${{ inputs.project-path }}
         --configuration ${{ inputs.configuration }}
         --nologo
 
     - name: Build using MSBuild
       if: ${{ inputs.use-msbuild }}
       run: msbuild
+        ${{ inputs.project-path }}
         /property:Configuration=${{ inputs.configuration }}
         /restore
 

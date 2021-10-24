@@ -26,12 +26,13 @@ Requires a nuget-key secret that will be able to load your NuGet packages.
 ### Inputs
 | name                                        | type    | default             |
 |---------------------------------------------|---------|---------------------|
+| os                                          | string  | 'ubuntu-latest'     |
 | dotnet-version                              | string  | '6.0.x'             |
 | additional-dotnet-version                   | string  | ''                  |
 | include-prerelease                          | boolean | true                |
-| os                                          | string  | 'ubuntu-latest'     |
 | fetch-depth                                 | number  | 50                  |
 | conventional-commits-publish-conditions     | boolean | true                |
+| project-path                                | string  | ''                  |
 | configuration                               | string  | 'Release'           |
 | use-msbuild                                 | boolean | false               |
 | vs-prerelease                               | boolean | true                |
