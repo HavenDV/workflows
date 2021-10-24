@@ -9,18 +9,9 @@ jobs:
     uses: HavenDV/workflows/.github/workflows/dotnet_build-test-publish.yml@main
     secrets:
       nuget-key: ${{ secrets.NUGET_KEY }}
-
-
-name: Build, test and release
-on: [ push ]
-
-jobs:
-  build-test-release:
-    name: Build, test and release
-    uses: HavenDV/workflows/.github/workflows/dotnet_build-test-release.yml@main
     with:
-      asset-path: src/installers/UpworkPdfGenerator.Installers.Wpf.NetFramework/UpworkPdfGenerator.msi
-      asset-name: UpworkPdfGenerator.msi
+      files: |
+        src/installers/UpworkPdfGenerator.Installers.Wpf.NetFramework/UpworkPdfGenerator.msi
 ```
 
 # Explanation
@@ -43,9 +34,7 @@ Requires a nuget-key secret that will be able to load your NuGet packages.
 | build-with-msbuild                          | boolean | false               |
 | vs-prerelease                               | boolean | true                |
 | run-tests                                   | boolean | true                |
-| asset-content-type                          | string  | 'application/x-msi' |
-| asset-path                                  | string  | ''                  |
-| asset-name                                  | string  | ''                  |
+| files                                       | string  | ''                  |
    
 ### Secrets
 | name                                        | type    | default             |

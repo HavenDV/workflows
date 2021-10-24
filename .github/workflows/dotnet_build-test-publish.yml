@@ -43,20 +43,10 @@ on:
         type: boolean
         default: true
         
-      asset-path:
+      files:
         required: false
         type: string
         default: ''
-        
-      asset-name:
-        required: false
-        type: string
-        default: ''
-        
-      asset-content-type:
-        required: false
-        type: string
-        default: 'application/x-msi'
         
     secrets:
       nuget-key:
@@ -150,23 +140,10 @@ jobs:
         --skip-duplicate
         --source https://api.nuget.org/v3/index.json
         --api-key ${{ secrets.nuget-key }}
-        
-    - name: Create Release
-      if: ${{ inputs.asset-path != '' && env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true' }}
-      id: create_release
-      uses: zendesk/action-create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: GitHub Release
+      if: ${{ inputs.files != '' && env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true' }}
+      uses: softprops/action-gh-release@v1
       with:
         body: ${{ env.PACKAGE_RELEASE_NOTES }}
-
-    - name: Upload Asset
-      if: ${{ inputs.asset-path != '' && env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true' }}
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ${{ inputs.asset-path }}
-        asset_name: ${{ inputs.asset-name }}
-        asset_content_type: ${{ inputs.asset-content-type }}
+        files: ${{ inputs.files }}
