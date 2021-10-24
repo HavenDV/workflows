@@ -28,6 +28,11 @@ on:
         type: boolean
         default: true
         
+      configuration:
+        required: false
+        type: string
+        default: Release
+        
       use-msbuild:
         required: false
         type: boolean
@@ -156,19 +161,19 @@ jobs:
     - name: Build using dotnet
       if: ${{ !inputs.use-msbuild }}
       run: dotnet build
-        --configuration Release
+        --configuration ${{ inputs.configuration }}
         --nologo
 
     - name: Build using MSBuild
       if: ${{ inputs.use-msbuild }}
       run: msbuild
-        /property:Configuration=Release
+        /property:Configuration=${{ inputs.configuration }}
         /restore
 
     - name: Run tests
       if: ${{ inputs.run-tests }}
       run: dotnet test
-        --configuration Release
+        --configuration ${{ inputs.configuration }}
         --nologo
         
     - name: Publish to NuGet
