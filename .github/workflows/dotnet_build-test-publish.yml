@@ -28,7 +28,7 @@ on:
         type: boolean
         default: true
         
-      build-with-msbuild:
+      use-msbuild:
         required: false
         type: boolean
         default: false
@@ -124,7 +124,7 @@ jobs:
         include-prerelease: ${{ inputs.include-prerelease }}
       
     - name: Setup MSBuild
-      if: ${{ inputs.build-with-msbuild }}
+      if: ${{ inputs.use-msbuild }}
       uses: microsoft/setup-msbuild@v1.0.3
       with:
         vs-prerelease: ${{ inputs.vs-prerelease }}
@@ -154,13 +154,13 @@ jobs:
         echo 'EOF' >> $GITHUB_ENV
     
     - name: Build using dotnet
-      if: ${{ !inputs.build-with-msbuild }}
+      if: ${{ !inputs.use-msbuild }}
       run: dotnet build
         --configuration Release
         --nologo
 
     - name: Build using MSBuild
-      if: ${{ inputs.build-with-msbuild }}
+      if: ${{ inputs.use-msbuild }}
       run: msbuild
         /property:Configuration=Release
         /restore
