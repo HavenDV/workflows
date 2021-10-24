@@ -27,6 +27,7 @@ Requires a nuget-key secret that will be able to load your NuGet packages.
 | name                                        | type    | default             |
 |---------------------------------------------|---------|---------------------|
 | dotnet-version                              | string  | '6.0.x'             |
+| additional-dotnet-version                   | string  | ''                  |
 | include-prerelease                          | boolean | true                |
 | os                                          | string  | 'ubuntu-latest'     |
 | fetch-depth                                 | number  | 50                  |
