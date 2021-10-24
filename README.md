@@ -45,6 +45,7 @@ Requires a nuget-key secret that will be able to load your NuGet packages.
 | asset-content-type1                         | string  | 'application/x-msi' |
 | asset-content-type2                         | string  | 'application/x-msi' |
 | asset-content-type3                         | string  | 'application/x-msi' |
+| deploy-web-assembly-path                    | string  | 'application/x-msi' |
    
 ### Secrets
 | name                                        | type    | default             |

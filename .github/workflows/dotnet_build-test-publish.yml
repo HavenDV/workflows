@@ -98,6 +98,11 @@ on:
         type: string
         default: application/x-msi
         
+      deploy-web-assembly-path:
+        required: false
+        type: string
+        default: ''
+        
     secrets:
       nuget-key:
         required: false
@@ -239,3 +244,13 @@ jobs:
         asset_path: ${{ inputs.asset-path3 }}
         asset_name: ${{ inputs.asset-name3 }}
         asset_content_type: ${{ inputs.asset-content-type3 }}
+
+    - name: Deploy WebAssembly to GitHub Pages
+      if: ${{ inputs.deploy-web-assembly-path != '' && env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true' }}
+      uses: crazy-max/ghaction-github-pages@v2
+      with:
+        target_branch: gh-pages
+        build_dir: ${{ inputs.deploy-web-assembly-path }}
+        jekyll: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
