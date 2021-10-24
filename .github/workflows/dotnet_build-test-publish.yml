@@ -130,7 +130,7 @@ jobs:
         vs-prerelease: ${{ inputs.vs-prerelease }}
       
     - name: Generate Release Notes on windows systems
-      if: ${{ inputs.os == 'windows-latest' }}
+      if: ${{ inputs.os == 'windows-latest' || inputs.os == 'windows-2022' }}
       run: |
         echo 'PACKAGE_RELEASE_NOTES<<EOF' >> $env:GITHUB_ENV
         echo '⭐ Last 10 features:' >> $env:GITHUB_ENV
@@ -142,7 +142,7 @@ jobs:
         echo 'EOF' >> $env:GITHUB_ENV
         
     - name: Generate Release Notes on non-windows systems
-      if: ${{ inputs.os != 'windows-latest' }}
+      if: ${{ inputs.os != 'windows-latest' && inputs.os != 'windows-2022' }}
       run: |
         echo 'PACKAGE_RELEASE_NOTES<<EOF' >> $GITHUB_ENV
         echo '⭐ Last 10 features:' >> $GITHUB_ENV
