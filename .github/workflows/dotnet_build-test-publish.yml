@@ -13,6 +13,11 @@ on:
         type: string
         default: 6.0.x
         
+      generate-build-number:
+        required: false
+        type: boolean
+        default: true
+        
       additional-dotnet-version:
         required: false
         type: string
@@ -132,7 +137,8 @@ jobs:
         fetch-depth: ${{ inputs.fetch-depth }}
 
     - name: Generate build number
-      if: env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true'
+      if: inputs.generate-build-number && 
+          env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true'
       uses: einaregilsson/build-number@v3
       with:
         token: ${{ secrets.github_token }}
