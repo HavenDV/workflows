@@ -33,6 +33,11 @@ on:
         type: string
         default: ''
         
+      windows-sdk-version:
+        required: false
+        type: string
+        default: ''
+        
       fetch-depth:
         required: false
         type: number
@@ -166,6 +171,12 @@ jobs:
       uses: microsoft/setup-msbuild@v1.0.3
       with:
         vs-prerelease: ${{ inputs.vs-prerelease }}
+
+    - name: Setup Windows SDK
+      if: inputs.windows-sdk-version != ''
+      uses: GuillaumeFalourd/setup-windows10-sdk-action@v1
+      with:
+        sdk-version: ${{ inputs.windows-sdk-version }}
       
     - name: Setup JDK
       if: contains(inputs.workloads, 'android')
