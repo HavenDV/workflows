@@ -36,6 +36,7 @@ Requires a nuget-key secret that will be able to load your NuGet packages.
 | fetch-depth                                 | number  | 50                  |
 | conventional-commits-publish-conditions     | boolean | true                |
 | project-path                                | string  | ''                  |
+| additional-project-path                     | string  | ''                  |
 | configuration                               | string  | 'Release'           |
 | use-msbuild                                 | boolean | false               |
 | vs-prerelease                               | boolean | true                |

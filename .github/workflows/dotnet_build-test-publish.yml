@@ -53,6 +53,11 @@ on:
         type: string
         default: ''
         
+      additional-project-path:
+        required: false
+        type: string
+        default: ''
+        
       configuration:
         required: false
         type: string
@@ -199,7 +204,8 @@ jobs:
         ${{ inputs.workloads }}
 
     - name: Generate Release Notes on windows systems
-      if: inputs.os == 'windows-latest' || inputs.os == 'windows-2022'
+      if: inputs.os == 'windows-latest' || 
+          inputs.os == 'windows-2022'
       run: |
         echo 'PACKAGE_RELEASE_NOTES<<EOF' >> $env:GITHUB_ENV
         echo '⭐ Last 10 features:' >> $env:GITHUB_ENV
@@ -211,7 +217,8 @@ jobs:
         echo 'EOF' >> $env:GITHUB_ENV
         
     - name: Generate Release Notes on non-windows systems
-      if: inputs.os != 'windows-latest' && inputs.os != 'windows-2022'
+      if: inputs.os != 'windows-latest' && 
+          inputs.os != 'windows-2022'
       run: |
         echo 'PACKAGE_RELEASE_NOTES<<EOF' >> $GITHUB_ENV
         echo '⭐ Last 10 features:' >> $GITHUB_ENV
@@ -242,9 +249,33 @@ jobs:
         ${{ inputs.project-path }}
         --configuration ${{ inputs.configuration }}
         --nologo
+    
+    - name: Build additional project using dotnet
+      if: inputs.additional-project-path != '' && !inputs.use-msbuild
+      run: dotnet build
+        ${{ inputs.project-path }}
+        --configuration ${{ inputs.configuration }}
+        --nologo
+
+    - name: Build additional project using MSBuild
+      if: inputs.additional-project-path != '' &&
+          inputs.use-msbuild
+      run: msbuild
+        ${{ inputs.project-path }}
+        /property:Configuration=${{ inputs.configuration }}
+        /restore
+
+    - name: Run additional project tests
+      if: inputs.additional-project-path != '' &&
+          inputs.run-tests && !inputs.use-msbuild
+      run: dotnet test
+        ${{ inputs.project-path }}
+        --configuration ${{ inputs.configuration }}
+        --nologo
         
     - name: Publish to NuGet
-      if: env.PUBLISH-TO-NUGET == 'true' && env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true'
+      if: env.PUBLISH-TO-NUGET == 'true' &&
+          env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true'
       env:
         PUBLISH: ${{ steps.compute-conventional-commits-publish-conditions.outputs.publish }}
       run: dotnet nuget push
@@ -254,7 +285,8 @@ jobs:
         --api-key ${{ secrets.nuget-key }}
         
     - name: Create Release
-      if: inputs.asset-path1 != '' && env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true'
+      if: inputs.asset-path1 != '' &&
+          env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true'
       id: create_release
       uses: zendesk/action-create-release@v1
       env:
@@ -263,7 +295,8 @@ jobs:
         body: ${{ env.PACKAGE_RELEASE_NOTES }}
 
     - name: Upload Asset 1
-      if: inputs.asset-path1 != '' && env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true'
+      if: inputs.asset-path1 != '' &&
+          env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true'
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -274,7 +307,8 @@ jobs:
         asset_content_type: ${{ inputs.asset-content-type1 }}
 
     - name: Upload Asset 2
-      if: inputs.asset-path2 != '' && env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true'
+      if: inputs.asset-path2 != '' &&
+          env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true'
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -285,7 +319,8 @@ jobs:
         asset_content_type: ${{ inputs.asset-content-type2 }}
 
     - name: Upload Asset 3
-      if: inputs.asset-path3 != '' && env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true'
+      if: inputs.asset-path3 != '' &&
+          env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true'
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
