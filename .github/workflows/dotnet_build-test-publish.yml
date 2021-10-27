@@ -298,7 +298,7 @@ jobs:
     - name: Deploy WebAssembly to current repository GitHub Pages
       if: inputs.deploy-web-assembly-path != '' &&
           env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true' &&
-          deploy-web-assembly-repo == ''
+          inputs.deploy-web-assembly-repo == ''
       uses: crazy-max/ghaction-github-pages@v2
       with:
         target_branch: gh-pages
@@ -310,7 +310,7 @@ jobs:
     - name: Deploy WebAssembly to other repository GitHub Pages
       if: inputs.deploy-web-assembly-path != '' &&
           env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true' &&
-          deploy-web-assembly-repo != ''
+          inputs.deploy-web-assembly-repo != ''
       uses: crazy-max/ghaction-github-pages@v2
       with:
         target_branch: gh-pages
