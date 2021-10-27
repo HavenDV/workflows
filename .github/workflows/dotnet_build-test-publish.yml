@@ -28,6 +28,11 @@ on:
         type: boolean
         default: true
         
+      workloads:
+        required: false
+        type: string
+        default: ''
+        
       fetch-depth:
         required: false
         type: number
@@ -162,6 +167,18 @@ jobs:
       with:
         vs-prerelease: ${{ inputs.vs-prerelease }}
       
+    - name: Setup JDK
+      if: contains(inputs.workloads, 'android')
+      uses: actions/setup-java@v2
+      with:
+        distribution: 'zulu'
+        java-version: '11'
+
+    - name: Install workloads
+      if: inputs.workloads != ''
+      run: dotnet workload install
+        ${{ inputs.workloads }}
+
     - name: Generate Release Notes on windows systems
       if: inputs.os == 'windows-latest' || inputs.os == 'windows-2022'
       run: |
