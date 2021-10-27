@@ -126,7 +126,7 @@ on:
       deploy-web-assembly-repo:
         required: false
         type: string
-        default: ${{ env.GITHUB_REPOSITORY }}
+        default: ''
         
     secrets:
       nuget-key:
@@ -295,8 +295,22 @@ jobs:
         asset_name: ${{ inputs.asset-name3 }}
         asset_content_type: ${{ inputs.asset-content-type3 }}
 
-    - name: Deploy WebAssembly to GitHub Pages
-      if: inputs.deploy-web-assembly-path != '' && env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true'
+    - name: Deploy WebAssembly to current repository GitHub Pages
+      if: inputs.deploy-web-assembly-path != '' &&
+          env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true' &&
+          deploy-web-assembly-repo == ''
+      uses: crazy-max/ghaction-github-pages@v2
+      with:
+        target_branch: gh-pages
+        build_dir: ${{ inputs.deploy-web-assembly-path }}
+        jekyll: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Deploy WebAssembly to other repository GitHub Pages
+      if: inputs.deploy-web-assembly-path != '' &&
+          env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true' &&
+          deploy-web-assembly-repo != ''
       uses: crazy-max/ghaction-github-pages@v2
       with:
         target_branch: gh-pages
