@@ -253,7 +253,7 @@ jobs:
     - name: Build additional project using dotnet
       if: inputs.additional-project-path != '' && !inputs.use-msbuild
       run: dotnet build
-        ${{ inputs.project-path }}
+        ${{ inputs.additional-project-path }}
         --configuration ${{ inputs.configuration }}
         --nologo
 
@@ -261,7 +261,7 @@ jobs:
       if: inputs.additional-project-path != '' &&
           inputs.use-msbuild
       run: msbuild
-        ${{ inputs.project-path }}
+        ${{ inputs.additional-project-path }}
         /property:Configuration=${{ inputs.configuration }}
         /restore
 
@@ -269,7 +269,7 @@ jobs:
       if: inputs.additional-project-path != '' &&
           inputs.run-tests && !inputs.use-msbuild
       run: dotnet test
-        ${{ inputs.project-path }}
+        ${{ inputs.additional-project-path }}
         --configuration ${{ inputs.configuration }}
         --nologo
         
