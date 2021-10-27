@@ -123,8 +123,16 @@ on:
         type: string
         default: ''
         
+      deploy-web-assembly-repo:
+        required: false
+        type: string
+        default: ${{ env.GITHUB_REPOSITORY }}
+        
     secrets:
       nuget-key:
+        required: false
+
+      personal-token:
         required: false
 
 jobs:
@@ -293,6 +301,8 @@ jobs:
       with:
         target_branch: gh-pages
         build_dir: ${{ inputs.deploy-web-assembly-path }}
+        repo: ${{ inputs.deploy-web-assembly-repo }}
         jekyll: false
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_PAT: ${{ secrets.personal-token }}
