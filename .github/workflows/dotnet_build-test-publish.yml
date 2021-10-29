@@ -201,29 +201,49 @@ jobs:
         vs-prerelease: ${{ inputs.vs-prerelease }}
 
     - name: Setup Windows SDK
-      if: inputs.windows-sdk-version != ''
+      if: inputs.windows-sdk-version != '' &&
+          inputs.windows-sdk-version != '16299'
       uses: GuillaumeFalourd/setup-windows10-sdk-action@v1
       with:
         sdk-version: ${{ inputs.windows-sdk-version }}
 
     - name: Setup Windows SDK
-      if: inputs.windows-sdk-version2 != ''
+      if: inputs.windows-sdk-version2 != '' &&
+          inputs.windows-sdk-version != '16299'
       uses: GuillaumeFalourd/setup-windows10-sdk-action@v1
       with:
         sdk-version: ${{ inputs.windows-sdk-version2 }}
 
     - name: Setup Windows SDK
-      if: inputs.windows-sdk-version3 != ''
+      if: inputs.windows-sdk-version3 != '' &&
+          inputs.windows-sdk-version != '16299'
       uses: GuillaumeFalourd/setup-windows10-sdk-action@v1
       with:
         sdk-version: ${{ inputs.windows-sdk-version3 }}
 
     - name: Setup Windows SDK
-      if: inputs.windows-sdk-version4 != ''
+      if: inputs.windows-sdk-version4 != '' &&
+          inputs.windows-sdk-version != '16299'
       uses: GuillaumeFalourd/setup-windows10-sdk-action@v1
       with:
         sdk-version: ${{ inputs.windows-sdk-version4 }}
       
+    - name: Install Windows SDK 10.0.16299
+      if: inputs.windows-sdk-version == '16299' ||
+          inputs.windows-sdk-version2 == '16299' ||
+          inputs.windows-sdk-version3 == '16299' ||
+          inputs.windows-sdk-version4 == '16299'
+      shell: pwsh
+      run: |
+        Invoke-WebRequest -Uri https://go.microsoft.com/fwlink/p/?linkid=864422 -OutFile winsdk.exe
+        $startInfo = New-Object System.Diagnostics.ProcessStartInfo
+        $startInfo.FileName = "winsdk.exe"
+        $startInfo.Arguments = "/norestart /quiet"
+        $process = New-Object System.Diagnostics.Process
+        $process.StartInfo = $startInfo
+        $process.Start()
+        $process.WaitForExit() 
+
     - name: Setup JDK
       if: contains(inputs.workloads, 'android')
       uses: actions/setup-java@v2
