@@ -38,6 +38,21 @@ on:
         type: string
         default: ''
         
+      windows-sdk-version2:
+        required: false
+        type: string
+        default: ''
+        
+      windows-sdk-version3:
+        required: false
+        type: string
+        default: ''
+        
+      windows-sdk-version4:
+        required: false
+        type: string
+        default: ''
+        
       fetch-depth:
         required: false
         type: number
@@ -190,6 +205,24 @@ jobs:
       uses: GuillaumeFalourd/setup-windows10-sdk-action@v1
       with:
         sdk-version: ${{ inputs.windows-sdk-version }}
+
+    - name: Setup Windows SDK
+      if: inputs.windows-sdk-version2 != ''
+      uses: GuillaumeFalourd/setup-windows10-sdk-action@v1
+      with:
+        sdk-version: ${{ inputs.windows-sdk-version2 }}
+
+    - name: Setup Windows SDK
+      if: inputs.windows-sdk-version3 != ''
+      uses: GuillaumeFalourd/setup-windows10-sdk-action@v1
+      with:
+        sdk-version: ${{ inputs.windows-sdk-version3 }}
+
+    - name: Setup Windows SDK
+      if: inputs.windows-sdk-version4 != ''
+      uses: GuillaumeFalourd/setup-windows10-sdk-action@v1
+      with:
+        sdk-version: ${{ inputs.windows-sdk-version4 }}
       
     - name: Setup JDK
       if: contains(inputs.workloads, 'android')

@@ -32,6 +32,9 @@ Requires a nuget-key secret that will be able to load your NuGet packages.
 | include-prerelease                          | boolean | true                |
 | workloads                                   | string  | ''                  |
 | windows-sdk-version                         | string  | ''                  |
+| windows-sdk-version2                        | string  | ''                  |
+| windows-sdk-version3                        | string  | ''                  |
+| windows-sdk-version4                        | string  | ''                  |
 | generate-build-number                       | boolean | true                |
 | fetch-depth                                 | number  | 50                  |
 | conventional-commits-publish-conditions     | boolean | true                |
