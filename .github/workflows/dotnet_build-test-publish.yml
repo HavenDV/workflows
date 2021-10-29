@@ -209,21 +209,21 @@ jobs:
 
     - name: Setup Windows SDK
       if: inputs.windows-sdk-version2 != '' &&
-          inputs.windows-sdk-version != '16299'
+          inputs.windows-sdk-version2 != '16299'
       uses: GuillaumeFalourd/setup-windows10-sdk-action@v1
       with:
         sdk-version: ${{ inputs.windows-sdk-version2 }}
 
     - name: Setup Windows SDK
       if: inputs.windows-sdk-version3 != '' &&
-          inputs.windows-sdk-version != '16299'
+          inputs.windows-sdk-version3 != '16299'
       uses: GuillaumeFalourd/setup-windows10-sdk-action@v1
       with:
         sdk-version: ${{ inputs.windows-sdk-version3 }}
 
     - name: Setup Windows SDK
       if: inputs.windows-sdk-version4 != '' &&
-          inputs.windows-sdk-version != '16299'
+          inputs.windows-sdk-version4 != '16299'
       uses: GuillaumeFalourd/setup-windows10-sdk-action@v1
       with:
         sdk-version: ${{ inputs.windows-sdk-version4 }}
