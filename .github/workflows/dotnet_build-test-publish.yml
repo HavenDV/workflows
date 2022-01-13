@@ -189,6 +189,11 @@ jobs:
       with:
         dotnet-version: ${{ inputs.dotnet-version }}
         include-prerelease: ${{ inputs.include-prerelease }}
+
+    - name: Install workloads
+      if: inputs.workloads != ''
+      run: dotnet workload install
+        ${{ inputs.workloads }}
           
     - name: Setup additional .NET
       if: inputs.additional-dotnet-version != ''
@@ -253,11 +258,6 @@ jobs:
       with:
         distribution: 'zulu'
         java-version: '11'
-
-    - name: Install workloads
-      if: inputs.workloads != ''
-      run: dotnet workload install
-        ${{ inputs.workloads }}
 
     - name: Generate Release Notes on windows systems
       if: inputs.os == 'windows-latest' || 
