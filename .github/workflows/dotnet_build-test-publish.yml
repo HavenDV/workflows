@@ -208,7 +208,6 @@ jobs:
       with:
         vs-version: 17.1.0
         vs-prerelease: ${{ inputs.vs-prerelease }}
-        msbuild-architecture: x64
 
     - name: Setup Windows SDK
       if: inputs.windows-sdk-version != '' &&
