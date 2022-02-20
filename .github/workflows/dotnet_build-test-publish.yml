@@ -206,7 +206,6 @@ jobs:
       if: inputs.use-msbuild
       uses: microsoft/setup-msbuild@v1.1
       with:
-        vs-version: 17.1.0
         vs-prerelease: ${{ inputs.vs-prerelease }}
 
     - name: Setup Windows SDK
