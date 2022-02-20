@@ -204,9 +204,10 @@ jobs:
       
     - name: Setup MSBuild
       if: inputs.use-msbuild
-      uses: microsoft/setup-msbuild@v1.0.3
+      uses: microsoft/setup-msbuild@v1.1
       with:
         vs-prerelease: ${{ inputs.vs-prerelease }}
+        msbuild-architecture: x64
 
     - name: Setup Windows SDK
       if: inputs.windows-sdk-version != '' &&
