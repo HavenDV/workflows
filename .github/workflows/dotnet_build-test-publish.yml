@@ -83,6 +83,11 @@ on:
         type: boolean
         default: false
         
+      install-latest-msbuild:
+        required: false
+        type: boolean
+        default: false
+        
       vs-prerelease:
         required: false
         type: boolean
@@ -202,16 +207,27 @@ jobs:
         dotnet-version: ${{ inputs.additional-dotnet-version }}
         include-prerelease: ${{ inputs.include-prerelease }}
 
-    - name: download build tools
-      run: Invoke-webrequest -uri  https://aka.ms/vs/17/pre/vs_buildtools.exe -OutFile vs_buildtools.exe
+    - name: Download build tools
+      if: inputs.install-latest-msbuild
+      run: Invoke-webrequest
+        -uri https://aka.ms/vs/17/pre/vs_buildtools.exe
+        -OutFile vs_buildtools.exe
       shell: powershell
 
-    - name: install build tools with required packages
-      run: .\vs_buildtools.exe --wait --norestart --passive --installPath "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools" --includeOptional --includeRecommended --add Microsoft.VisualStudio.Workload.ManagedDesktopBuildTools --add Microsoft.VisualStudio.Workload.MSBuildTools --add Microsoft.VisualStudio.Workload.NativeDesktop --add Microsoft.VisualStudio.Workload.NetCoreTools
+    - name: Install build tools
+      if: inputs.install-latest-msbuild
+      run: .\vs_buildtools.exe
+        --wait
+        --norestart
+        --passive
+        --installPath "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools"
+        --includeOptional
+        --includeRecommended
+        --add Microsoft.VisualStudio.Workload.ManagedDesktopBuildTools
+        --add Microsoft.VisualStudio.Workload.MSBuildTools
+        --add Microsoft.VisualStudio.Workload.NativeDesktop
+        --add Microsoft.VisualStudio.Workload.NetCoreTools
       shell: cmd
-
-    - name: set MSBuildSDKsPath env variable
-      run: echo ::set-env name=MSBuildSDKsPath::"C:\Program Files (x86)\Microsoft Visual Studio\2022\Enterprise\MSBuild\Sdks"
 
     - name: Setup MSBuild
       if: inputs.use-msbuild
