@@ -175,6 +175,7 @@ jobs:
         contains(join(github.event.commits.*.message), 'feat(') || 
         contains(join(github.event.commits.*.message), 'perf(') }}
       PUBLISH-TO-NUGET: ${{ !!secrets.nuget-key }}
+      IS-PERSONAL-TOKEN-AVAILABLE: ${{ !!secrets.personal-token }}
     
     steps:
     - name: Getting code
@@ -184,7 +185,7 @@ jobs:
         
     - name: Generate build number using standard token
       if: inputs.generate-build-number &&
-          secrets.personal-token == '' && 
+          env.IS-PERSONAL-TOKEN-AVAILABLE != 'true'
           env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true'
       uses: einaregilsson/build-number@v3
       with:
@@ -192,7 +193,7 @@ jobs:
         
     - name: Generate build number using personal token
       if: inputs.generate-build-number &&
-          secrets.personal-token != '' && 
+          env.IS-PERSONAL-TOKEN-AVAILABLE == 'true'
           env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true'
       uses: einaregilsson/build-number@v3
       with:
