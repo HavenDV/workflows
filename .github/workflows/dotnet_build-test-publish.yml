@@ -181,13 +181,22 @@ jobs:
       uses: actions/checkout@v2
       with: 
         fetch-depth: ${{ inputs.fetch-depth }}
-
-    - name: Generate build number
-      if: inputs.generate-build-number && 
+        
+    - name: Generate build number using standard token
+      if: inputs.generate-build-number &&
+          secrets.personal-token == '' && 
           env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true'
       uses: einaregilsson/build-number@v3
       with:
         token: ${{ secrets.github_token }}
+        
+    - name: Generate build number using personal token
+      if: inputs.generate-build-number &&
+          secrets.personal-token != '' && 
+          env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true'
+      uses: einaregilsson/build-number@v3
+      with:
+        token: ${{ secrets.personal-token }}
           
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
