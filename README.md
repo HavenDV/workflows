@@ -36,7 +36,7 @@ Requires a nuget-key secret that will be able to load your NuGet packages.
 | windows-sdk-version3                        | string  | ''                  |
 | windows-sdk-version4                        | string  | ''                  |
 | generate-build-number                       | boolean | true                |
-| fetch-depth                                 | number  | 50                  |
+| fetch-depth                                 | number  | 0                  |
 | conventional-commits-publish-conditions     | boolean | true                |
 | project-path                                | string  | ''                  |
 | additional-project-path                     | string  | ''                  |

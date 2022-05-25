@@ -56,7 +56,7 @@ on:
       fetch-depth:
         required: false
         type: number
-        default: 50
+        default: 0
         
       conventional-commits-publish-conditions:
         required: false
