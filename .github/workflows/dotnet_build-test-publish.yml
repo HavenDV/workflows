@@ -238,6 +238,7 @@ jobs:
         --add Microsoft.VisualStudio.Workload.NativeDesktop
         --add Microsoft.VisualStudio.Workload.NetCoreTools
       shell: cmd
+      continue-on-error: true
 
     - name: Setup MSBuild
       if: inputs.use-msbuild
