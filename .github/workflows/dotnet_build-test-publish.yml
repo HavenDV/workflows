@@ -23,10 +23,10 @@ on:
         type: string
         default: ''
         
-      include-prerelease:
+      dotnet-quality:
         required: false
-        type: boolean
-        default: true
+        type: string
+        default: 'preview'
         
       workloads:
         required: false
@@ -203,7 +203,7 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: ${{ inputs.dotnet-version }}
-        include-prerelease: ${{ inputs.include-prerelease }}
+        dotnet-quality: ${{ inputs.dotnet-quality }}
 
     - name: Install workloads
       if: inputs.workloads != ''
@@ -215,7 +215,7 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: ${{ inputs.additional-dotnet-version }}
-        include-prerelease: ${{ inputs.include-prerelease }}
+        dotnet-quality: ${{ inputs.dotnet-quality }}
 
     - name: Download build tools
       if: inputs.install-latest-msbuild
