@@ -156,6 +156,9 @@ on:
     secrets:
       nuget-key:
         required: false
+        
+      virustotal-key:
+        required: false
 
       personal-token:
         required: false
@@ -175,6 +178,7 @@ jobs:
         contains(join(github.event.commits.*.message), 'feat(') || 
         contains(join(github.event.commits.*.message), 'perf(') }}
       PUBLISH-TO-NUGET: ${{ !!secrets.nuget-key }}
+      SCAN-BY-VIRUSTOTAL: ${{ !!secrets.virustotal-key }}
       IS-PERSONAL-TOKEN-AVAILABLE: ${{ !!secrets.personal-token }}
     
     steps:
@@ -423,6 +427,19 @@ jobs:
         asset_path: ${{ inputs.asset-path3 }}
         asset_name: ${{ inputs.asset-name3 }}
         asset_content_type: ${{ inputs.asset-content-type3 }}
+        
+    - name: VirusTotal Scan
+      if: env.SCAN-BY-VIRUSTOTAL == 'true' &&
+          inputs.asset-path1 != '' &&
+          env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true'
+      uses: crazy-max/ghaction-virustotal@v3
+      with:
+        vt_api_key: ${{ secrets.virustotal-key }}
+        update_release_body: true
+        files: |
+          .exe$
+          .msi$
+          .dll$
 
     - name: Deploy WebAssembly to current repository GitHub Pages
       if: inputs.deploy-web-assembly-path != '' &&
