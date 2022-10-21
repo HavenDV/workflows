@@ -437,9 +437,9 @@ jobs:
         vt_api_key: ${{ secrets.virustotal-key }}
         update_release_body: true
         files: |
-          .exe$
-          .msi$
-          .dll$
+          ${{ inputs.asset-path1 }}
+          ${{ inputs.asset-path2 }}
+          ${{ inputs.asset-path3 }}
 
     - name: Deploy WebAssembly to current repository GitHub Pages
       if: inputs.deploy-web-assembly-path != '' &&
