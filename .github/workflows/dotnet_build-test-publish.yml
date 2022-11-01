@@ -402,6 +402,7 @@ jobs:
       id: create_release
       uses: actions/github-script@v6
       with:
+        result-encoding: string
         script: |
           const result = await github.rest.repos.createRelease({
             owner: context.repo.owner,
@@ -413,7 +414,7 @@ jobs:
             generate_release_notes: true,
           })
           
-          return result.data
+          return result.data.upload_url
 
     - name: Upload Asset 1
       if: inputs.asset-path1 != '' &&
@@ -422,7 +423,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.create_release.outputs.result.upload_url }}
+        upload_url: ${{ steps.create_release.outputs.result }}
         asset_path: ${{ inputs.asset-path1 }}
         asset_name: ${{ inputs.asset-name1 }}
         asset_content_type: ${{ inputs.asset-content-type1 }}
@@ -434,7 +435,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.create_release.outputs.result.upload_url }}
+        upload_url: ${{ steps.create_release.outputs.result }}
         asset_path: ${{ inputs.asset-path2 }}
         asset_name: ${{ inputs.asset-name2 }}
         asset_content_type: ${{ inputs.asset-content-type2 }}
@@ -446,7 +447,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.create_release.outputs.result.upload_url }}
+        upload_url: ${{ steps.create_release.outputs.result }}
         asset_path: ${{ inputs.asset-path3 }}
         asset_name: ${{ inputs.asset-name3 }}
         asset_content_type: ${{ inputs.asset-content-type3 }}
