@@ -392,7 +392,7 @@ jobs:
           github.rest.repos.createRelease({
             owner: context.repo.owner,
             repo: context.repo.repo,
-            tag_name: ${{ steps.build-number.outputs.build_number }},
+            tag_name: '${{ steps.build-number.outputs.build_number }}',
             body: '${{ env.PACKAGE_RELEASE_NOTES }}',
           })
 
