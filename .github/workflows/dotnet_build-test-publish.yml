@@ -393,7 +393,9 @@ jobs:
             owner: context.repo.owner,
             repo: context.repo.repo,
             tag_name: 'build-number-${{ steps.build-number.outputs.build_number }}',
+            name: 'Release ${{ steps.build-number.outputs.build_number }}',
             body: `${{ env.PACKAGE_RELEASE_NOTES }}`,
+            generate_release_notes: true,
           })
 
     - name: Upload Asset 1
