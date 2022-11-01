@@ -199,6 +199,7 @@ jobs:
       if: inputs.generate-build-number &&
           env.IS-PERSONAL-TOKEN-AVAILABLE == 'true' &&
           env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true'
+      id: buildnumber
       uses: einaregilsson/build-number@v3
       with:
         token: ${{ secrets.personal-token }}
@@ -383,14 +384,17 @@ jobs:
         --api-key ${{ secrets.nuget-key }}
         
     - name: Create Release
-      if: inputs.asset-path1 != '' &&
-          env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true'
+      if: env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true'
       id: create_release
-      uses: zendesk/action-create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      uses: actions/github-script@v6
       with:
-        body: ${{ env.PACKAGE_RELEASE_NOTES }}
+        script: |
+          github.rest.repos.createRelease({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            tag_name: steps.buildnumber.outputs.build_number,
+            body: env.PACKAGE_RELEASE_NOTES,
+          })
 
     - name: Upload Asset 1
       if: inputs.asset-path1 != '' &&
