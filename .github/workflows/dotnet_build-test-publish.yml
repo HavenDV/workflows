@@ -383,6 +383,20 @@ jobs:
         --source https://api.nuget.org/v3/index.json
         --api-key ${{ secrets.nuget-key }}
         
+    - name: VirusTotal Scan
+      if: env.SCAN-BY-VIRUSTOTAL == 'true' &&
+          inputs.asset-path1 != '' &&
+          env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true'
+      id: virustotal
+      uses: crazy-max/ghaction-virustotal@v3
+      with:
+        vt_api_key: ${{ secrets.virustotal-key }}
+        update_release_body: true
+        files: |
+          ${{ inputs.asset-path1 }}
+          ${{ inputs.asset-path2 }}
+          ${{ inputs.asset-path3 }}
+        
     - name: Create Release
       if: env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true'
       id: create_release
@@ -394,7 +408,8 @@ jobs:
             repo: context.repo.repo,
             tag_name: 'build-number-${{ steps.build-number.outputs.build_number }}',
             name: 'Release ${{ steps.build-number.outputs.build_number }}',
-            body: `${{ env.PACKAGE_RELEASE_NOTES }}`,
+            body: `${{ env.PACKAGE_RELEASE_NOTES }}
+              ${{ steps.virustotal.outputs.analysis }}`,
             generate_release_notes: true,
           })
 
@@ -433,19 +448,6 @@ jobs:
         asset_path: ${{ inputs.asset-path3 }}
         asset_name: ${{ inputs.asset-name3 }}
         asset_content_type: ${{ inputs.asset-content-type3 }}
-        
-    - name: VirusTotal Scan
-      if: env.SCAN-BY-VIRUSTOTAL == 'true' &&
-          inputs.asset-path1 != '' &&
-          env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true'
-      uses: crazy-max/ghaction-virustotal@v3
-      with:
-        vt_api_key: ${{ secrets.virustotal-key }}
-        update_release_body: true
-        files: |
-          ${{ inputs.asset-path1 }}
-          ${{ inputs.asset-path2 }}
-          ${{ inputs.asset-path3 }}
 
     - name: Deploy WebAssembly to current repository GitHub Pages
       if: inputs.deploy-web-assembly-path != '' &&
