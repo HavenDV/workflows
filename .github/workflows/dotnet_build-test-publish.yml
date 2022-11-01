@@ -414,6 +414,8 @@ jobs:
             generate_release_notes: true,
           })
           
+          console.log(result)
+          
           return result.upload_url
 
     - name: Upload Asset 1
