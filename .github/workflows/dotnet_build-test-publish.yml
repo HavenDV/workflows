@@ -388,6 +388,7 @@ jobs:
       id: create_release
       uses: actions/github-script@v6
       with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
           github.rest.repos.createRelease({
             owner: context.repo.owner,
