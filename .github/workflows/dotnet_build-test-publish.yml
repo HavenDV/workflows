@@ -404,13 +404,19 @@ jobs:
       with:
         result-encoding: string
         script: |
+          let body = `${{ env.PACKAGE_RELEASE_NOTES }}`
+          body = body.concat(`\n\n<details>\n  <summary>🛡 VirusTotal analysis</summary>\n`)
+          const json = '{"' + '${{ steps.virustotal.outputs.analysis }}'.replace(/ /g, '", "').replace(/=/g, '": "') + '"}';
+          for ((key, value) in JSON.Parse(json)) {
+            body = body.concat(`\n  * [\`${key}\`](${value})`);
+          }
+          
           const result = await github.rest.repos.createRelease({
             owner: context.repo.owner,
             repo: context.repo.repo,
             tag_name: 'build-number-${{ steps.build-number.outputs.build_number }}',
             name: 'Release ${{ steps.build-number.outputs.build_number }}',
-            body: `${{ env.PACKAGE_RELEASE_NOTES }}
-              ${{ steps.virustotal.outputs.analysis }}`,
+            body: body,
             generate_release_notes: true,
           })
           
