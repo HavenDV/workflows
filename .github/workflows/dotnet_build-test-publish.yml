@@ -415,8 +415,9 @@ jobs:
           let body = `${{ env.PACKAGE_RELEASE_NOTES }}`
           
           body = body.concat(`\n\n<details>\n  <summary>🛡 VirusTotal analysis</summary>\n`)
-          for (element of '${{ steps.virustotal.outputs.analysis }}'.split(";").split("=")) {
-            body = body.concat(`\n  * [\`${element[0]}\`](${element[1]})`)
+          for (element of '${{ steps.virustotal.outputs.analysis }}'.split(";")) {
+            const values = element.split("=")
+            body = body.concat(`\n  * [\`${values[0]}\`](${values[1]})`)
           }
 
           const result = await github.rest.repos.createRelease({
