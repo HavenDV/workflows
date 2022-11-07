@@ -414,9 +414,9 @@ jobs:
         script: |
           let body = `${{ env.PACKAGE_RELEASE_NOTES }}`
           
-          body = body.concat(`\n\n<details>\n  <summary>🛡 VirusTotal analysis</summary>\n`)
-          for (element of '${{ steps.virustotal.outputs.analysis }}'.split(";")) {
-            const values = element.split("=")
+          body = body.concat(`\n\n🛡 VirusTotal analysis:\n`)
+          for (element of '${{ steps.virustotal.outputs.analysis }}'.split(";")) { 
+            const values = element.split(/=(.*)/s)
             body = body.concat(`\n  * [\`${values[0]}\`](${values[1]})`)
           }
 
