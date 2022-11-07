@@ -415,10 +415,13 @@ jobs:
           let body = `${{ env.PACKAGE_RELEASE_NOTES }}`
           body = body.concat(`\n\n<details>\n  <summary>🛡 VirusTotal analysis</summary>\n`)
           const json = '{"' + '${{ steps.virustotal.outputs.analysis }}'.replace(/ /g, '", "').replace(/=/g, '": "') + '"}'
-          for ((key, value) in JSON.parse(json)) {
-            body = body.concat(`\n  * [\`${key}\`](${value})`)
+          const values = JSON.parse(json)
+          for (const key in values){
+            if(obj.hasOwnProperty(key)){
+              body = body.concat(`\n  * [\`${key}\`](${values[key]})`)
+            }
           }
-          
+
           const result = await github.rest.repos.createRelease({
             owner: context.repo.owner,
             repo: context.repo.repo,
