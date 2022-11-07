@@ -11,7 +11,7 @@ on:
       dotnet-version:
         required: false
         type: string
-        default: 6.0.x
+        default: 7.0.x
         
       generate-build-number:
         required: false
