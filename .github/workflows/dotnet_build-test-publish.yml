@@ -406,9 +406,9 @@ jobs:
         script: |
           let body = `${{ env.PACKAGE_RELEASE_NOTES }}`
           body = body.concat(`\n\n<details>\n  <summary>🛡 VirusTotal analysis</summary>\n`)
-          const json = '{"' + '${{ steps.virustotal.outputs.analysis }}'.replace(/ /g, '", "').replace(/=/g, '": "') + '"}';
-          for ((key, value) in JSON.Parse(json)) {
-            body = body.concat(`\n  * [\`${key}\`](${value})`);
+          const json = '{"' + '${{ steps.virustotal.outputs.analysis }}'.replace(/ /g, '", "').replace(/=/g, '": "') + '"}'
+          for ((key, value) in JSON.parse(json)) {
+            body = body.concat(`\n  * [\`${key}\`](${value})`)
           }
           
           const result = await github.rest.repos.createRelease({
