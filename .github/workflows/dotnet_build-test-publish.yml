@@ -406,7 +406,8 @@ jobs:
           ${{ inputs.asset-path3 }}
         
     - name: Create Release
-      if: env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true'
+      if: inputs.generate-build-number &&
+          env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true'
       id: create_release
       uses: actions/github-script@v6
       with:
