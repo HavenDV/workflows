@@ -472,7 +472,7 @@ jobs:
       if: inputs.deploy-web-assembly-path != '' &&
           env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true' &&
           inputs.deploy-web-assembly-repo == ''
-      uses: crazy-max/ghaction-github-pages@v2
+      uses: crazy-max/ghaction-github-pages@v3
       with:
         target_branch: gh-pages
         build_dir: ${{ inputs.deploy-web-assembly-path }}
@@ -484,7 +484,7 @@ jobs:
       if: inputs.deploy-web-assembly-path != '' &&
           env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true' &&
           inputs.deploy-web-assembly-repo != ''
-      uses: crazy-max/ghaction-github-pages@v2
+      uses: crazy-max/ghaction-github-pages@v3
       with:
         target_branch: gh-pages
         build_dir: ${{ inputs.deploy-web-assembly-path }}
