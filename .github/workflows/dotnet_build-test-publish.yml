@@ -225,7 +225,7 @@ jobs:
           
     - name: Setup additional .NET
       if: inputs.additional-dotnet-version != ''
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v3
       with:
         dotnet-version: ${{ inputs.additional-dotnet-version }}
         dotnet-quality: ${{ inputs.dotnet-quality }}
