@@ -26,7 +26,7 @@ on:
       dotnet-quality:
         required: false
         type: string
-        default: 'preview'
+        default: 'ga'
         
       workloads:
         required: false
