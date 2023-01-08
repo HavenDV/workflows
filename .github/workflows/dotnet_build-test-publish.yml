@@ -506,10 +506,18 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GH_PAT: ${{ secrets.personal-token }}
         
+    - name: Clear build cache
+      uses: actions/github-script@v6
+      with:
+        script: |
+          github.rest.actions.deleteActionsCacheById({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            cache_id: '${{ runner.os }}-build',
+          })
+            
     - name: Cache build
       uses: actions/cache@v3
       with:
         path: .
-        key: ${{ runner.os }}-build-${{ hashFiles('**/*.*') }}
-        restore-keys: |
-          ${{ runner.os }}-build-
+        key: ${{ runner.os }}-build
