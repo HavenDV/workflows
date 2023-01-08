@@ -507,6 +507,7 @@ jobs:
         GH_PAT: ${{ secrets.personal-token }}
         
     - name: Clear build cache
+      continue-on-error: true
       uses: actions/github-script@v6
       with:
         script: |
