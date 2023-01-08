@@ -380,6 +380,12 @@ jobs:
         --configuration ${{ inputs.configuration }}
         --nologo
         
+    - name: Upload NuGet packages artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: nuget-packages
+        path: ./**/*.nupkg
+    
     - name: Publish to NuGet
       if: env.PUBLISH-TO-NUGET == 'true' &&
           env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true'
