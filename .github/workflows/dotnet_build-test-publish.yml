@@ -187,7 +187,7 @@ jobs:
       with: 
         fetch-depth: ${{ inputs.fetch-depth }}
         
-    - name: Cache
+    - name: Cache Nuget Packages
       uses: actions/cache@v3.0.11
       with:
         path: ~/.nuget/packages
@@ -493,3 +493,9 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GH_PAT: ${{ secrets.personal-token }}
+        
+    - name: Cache build
+      uses: actions/cache@v3.0.11
+      with:
+        path: .
+        key: ${{ runner.os }}-build
