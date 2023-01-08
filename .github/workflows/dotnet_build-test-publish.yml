@@ -193,7 +193,7 @@ jobs:
         fetch-depth: ${{ inputs.fetch-depth }}
         
     - name: Cache Nuget Packages
-      uses: actions/cache@v3.0.11
+      uses: actions/cache@v3
       with:
         path: ~/.nuget/packages
         key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
@@ -507,7 +507,7 @@ jobs:
         GH_PAT: ${{ secrets.personal-token }}
         
     - name: Cache build
-      uses: actions/cache@v3.0.11
+      uses: actions/cache@v3
       with:
         path: .
         key: ${{ runner.os }}-build-${{ hashFiles('**/*.*') }}
