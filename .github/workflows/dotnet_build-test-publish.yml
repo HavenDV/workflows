@@ -88,6 +88,11 @@ on:
         type: boolean
         default: false
         
+      install-tizen:
+        required: false
+        type: boolean
+        default: false
+        
       vs-prerelease:
         required: false
         type: boolean
@@ -185,6 +190,7 @@ jobs:
       PUBLISH-TO-NUGET: ${{ !!secrets.nuget-key }}
       SCAN-BY-VIRUSTOTAL: ${{ !!secrets.virustotal-key }}
       IS-PERSONAL-TOKEN-AVAILABLE: ${{ !!secrets.personal-token }}
+      TF_BUILD: ${{ inputs.install-tizen }}
     
     steps:
     - name: Getting code
@@ -235,6 +241,16 @@ jobs:
         dotnet-version: ${{ inputs.additional-dotnet-version }}
         dotnet-quality: ${{ inputs.dotnet-quality }}
 
+    - name: Install Tizen workload on macOS / Linux
+      if: inputs.install-tizen && runner.os != 'Windows'
+      run: curl -sSL https://raw.githubusercontent.com/Samsung/Tizen.NET/main/workload/scripts/workload-install.sh | sudo bash
+
+    - name: Install Tizen workload on Windows
+      if: inputs.install-tizen && runner.os == 'Windows'
+      run: |
+          Invoke-WebRequest 'https://raw.githubusercontent.com/Samsung/Tizen.NET/main/workload/scripts/workload-install.ps1' -OutFile 'workload-install.ps1'
+          ./workload-install.ps1
+                  
     - name: Download build tools
       if: inputs.install-latest-msbuild
       run: Invoke-webrequest
