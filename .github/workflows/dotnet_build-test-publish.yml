@@ -173,6 +173,9 @@ on:
       personal-token:
         required: false
 
+      api-key:
+        required: false
+
 jobs:
   build:
     runs-on: ${{ inputs.os }}
@@ -191,6 +194,7 @@ jobs:
       SCAN-BY-VIRUSTOTAL: ${{ !!secrets.virustotal-key }}
       IS-PERSONAL-TOKEN-AVAILABLE: ${{ !!secrets.personal-token }}
       TF_BUILD: ${{ inputs.install-tizen }}
+      API_KEY: ${{ secrets.api-key }}
     
     steps:
     - name: Getting code
