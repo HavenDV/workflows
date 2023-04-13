@@ -103,6 +103,11 @@ on:
         type: boolean
         default: true
         
+      additional-test-arguments:
+        required: false
+        type: string
+        default: ''
+        
       create-release:
         required: false
         type: boolean
@@ -386,6 +391,7 @@ jobs:
         ${{ inputs.project-path }}
         --configuration ${{ inputs.configuration }}
         --nologo
+        ${{ inputs.additional-test-arguments }}
     
     - name: Build additional project using dotnet
       if: inputs.additional-project-path != '' && !inputs.use-msbuild
@@ -409,6 +415,7 @@ jobs:
         ${{ inputs.additional-project-path }}
         --configuration ${{ inputs.configuration }}
         --nologo
+        ${{ inputs.additional-test-arguments }}
         
     - name: Upload NuGet packages artifacts
       uses: actions/upload-artifact@v3
