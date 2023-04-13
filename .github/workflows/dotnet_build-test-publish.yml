@@ -422,7 +422,7 @@ jobs:
         src\**.nupkg
         --skip-duplicate
         --source https://nuget.pkg.github.com/${{ inputs.github-packages-path }}/index.json
-        --api-key ${{ secrets.PERSONAL_TOKEN }}
+        --api-key ${{ secrets.personal-token }}
     
     - name: Publish to NuGet
       if: env.PUBLISH-TO-NUGET == 'true' &&
