@@ -153,6 +153,11 @@ on:
         type: string
         default: application/x-msi
         
+      github-packages-path:
+        required: false
+        type: string
+        default: ''
+        
       deploy-web-assembly-path:
         required: false
         type: string
@@ -410,6 +415,14 @@ jobs:
       with:
         name: nuget-packages
         path: ./**/*.nupkg
+
+    - name: Publish to GitHub Packages
+      if: env.IS-PERSONAL-TOKEN-AVAILABLE == 'true'
+      run: dotnet nuget push
+        src\**.nupkg
+        --skip-duplicate
+        --source https://nuget.pkg.github.com/${{ inputs.github-packages-path }}/index.json
+        --api-key ${{ secrets.PERSONAL_TOKEN }}
     
     - name: Publish to NuGet
       if: env.PUBLISH-TO-NUGET == 'true' &&
