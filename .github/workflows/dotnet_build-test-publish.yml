@@ -11,7 +11,7 @@ on:
       dotnet-version:
         required: false
         type: string
-        default: 6.0.x
+        default: 7.0.x
         
       generate-build-number:
         required: false
@@ -23,10 +23,10 @@ on:
         type: string
         default: ''
         
-      include-prerelease:
+      dotnet-quality:
         required: false
-        type: boolean
-        default: true
+        type: string
+        default: 'ga'
         
       workloads:
         required: false
@@ -88,12 +88,27 @@ on:
         type: boolean
         default: false
         
+      install-tizen:
+        required: false
+        type: boolean
+        default: false
+        
       vs-prerelease:
         required: false
         type: boolean
         default: true
         
       run-tests:
+        required: false
+        type: boolean
+        default: true
+        
+      additional-test-arguments:
+        required: false
+        type: string
+        default: ''
+        
+      create-release:
         required: false
         type: boolean
         default: true
@@ -143,6 +158,11 @@ on:
         type: string
         default: application/x-msi
         
+      github-packages-path:
+        required: false
+        type: string
+        default: ''
+        
       deploy-web-assembly-path:
         required: false
         type: string
@@ -156,8 +176,14 @@ on:
     secrets:
       nuget-key:
         required: false
+        
+      virustotal-key:
+        required: false
 
       personal-token:
+        required: false
+
+      api-key:
         required: false
 
 jobs:
@@ -175,18 +201,30 @@ jobs:
         contains(join(github.event.commits.*.message), 'feat(') || 
         contains(join(github.event.commits.*.message), 'perf(') }}
       PUBLISH-TO-NUGET: ${{ !!secrets.nuget-key }}
+      SCAN-BY-VIRUSTOTAL: ${{ !!secrets.virustotal-key }}
       IS-PERSONAL-TOKEN-AVAILABLE: ${{ !!secrets.personal-token }}
+      TF_BUILD: ${{ inputs.install-tizen }}
+      API_KEY: ${{ secrets.api-key }}
     
     steps:
     - name: Getting code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with: 
         fetch-depth: ${{ inputs.fetch-depth }}
         
+    - name: Cache Nuget Packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
+      
     - name: Generate build number using standard token
       if: inputs.generate-build-number &&
           env.IS-PERSONAL-TOKEN-AVAILABLE != 'true' &&
           env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true'
+      id: build-number
       uses: einaregilsson/build-number@v3
       with:
         token: ${{ secrets.github_token }}
@@ -200,10 +238,10 @@ jobs:
         token: ${{ secrets.personal-token }}
           
     - name: Setup .NET
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v3
       with:
         dotnet-version: ${{ inputs.dotnet-version }}
-        include-prerelease: ${{ inputs.include-prerelease }}
+        dotnet-quality: ${{ inputs.dotnet-quality }}
 
     - name: Install workloads
       if: inputs.workloads != ''
@@ -212,11 +250,21 @@ jobs:
           
     - name: Setup additional .NET
       if: inputs.additional-dotnet-version != ''
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v3
       with:
         dotnet-version: ${{ inputs.additional-dotnet-version }}
-        include-prerelease: ${{ inputs.include-prerelease }}
+        dotnet-quality: ${{ inputs.dotnet-quality }}
 
+    - name: Install Tizen workload on macOS / Linux
+      if: inputs.install-tizen && runner.os != 'Windows'
+      run: curl -sSL https://raw.githubusercontent.com/Samsung/Tizen.NET/main/workload/scripts/workload-install.sh | sudo bash
+
+    - name: Install Tizen workload on Windows
+      if: inputs.install-tizen && runner.os == 'Windows'
+      run: |
+          Invoke-WebRequest 'https://raw.githubusercontent.com/Samsung/Tizen.NET/main/workload/scripts/workload-install.ps1' -OutFile 'workload-install.ps1'
+          ./workload-install.ps1
+                  
     - name: Download build tools
       if: inputs.install-latest-msbuild
       run: Invoke-webrequest
@@ -343,6 +391,7 @@ jobs:
         ${{ inputs.project-path }}
         --configuration ${{ inputs.configuration }}
         --nologo
+        ${{ inputs.additional-test-arguments }}
     
     - name: Build additional project using dotnet
       if: inputs.additional-project-path != '' && !inputs.use-msbuild
@@ -366,7 +415,22 @@ jobs:
         ${{ inputs.additional-project-path }}
         --configuration ${{ inputs.configuration }}
         --nologo
+        ${{ inputs.additional-test-arguments }}
         
+    - name: Upload NuGet packages artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: nuget-packages
+        path: ./**/*.nupkg
+
+    - name: Publish to GitHub Packages
+      if: env.IS-PERSONAL-TOKEN-AVAILABLE == 'true'
+      run: dotnet nuget push
+        src\**.nupkg
+        --skip-duplicate
+        --source https://nuget.pkg.github.com/${{ inputs.github-packages-path }}/index.json
+        --api-key ${{ secrets.personal-token }}
+    
     - name: Publish to NuGet
       if: env.PUBLISH-TO-NUGET == 'true' &&
           env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true'
@@ -378,15 +442,47 @@ jobs:
         --source https://api.nuget.org/v3/index.json
         --api-key ${{ secrets.nuget-key }}
         
+    - name: VirusTotal Scan
+      if: env.SCAN-BY-VIRUSTOTAL == 'true' &&
+          inputs.asset-path1 != '' &&
+          env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true'
+      id: virustotal
+      uses: crazy-max/ghaction-virustotal@v3
+      with:
+        vt_api_key: ${{ secrets.virustotal-key }}
+        update_release_body: true
+        files: |
+          ${{ inputs.asset-path1 }}
+          ${{ inputs.asset-path2 }}
+          ${{ inputs.asset-path3 }}
+        
     - name: Create Release
-      if: inputs.asset-path1 != '' &&
+      if: inputs.create-release &&
+          inputs.generate-build-number &&
           env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true'
       id: create_release
-      uses: zendesk/action-create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      uses: actions/github-script@v6
       with:
-        body: ${{ env.PACKAGE_RELEASE_NOTES }}
+        result-encoding: string
+        script: |
+          let body = `${{ env.PACKAGE_RELEASE_NOTES }}`
+          
+          body = body.concat(`\n\n🛡 VirusTotal analysis:\n`)
+          for (element of '${{ steps.virustotal.outputs.analysis }}'.split(";")) { 
+            const values = element.split(/=(.*)/s)
+            body = body.concat(`\n  * [\`${values[0]}\`](${values[1]})`)
+          }
+
+          const result = await github.rest.repos.createRelease({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            tag_name: 'build-number-${{ steps.build-number.outputs.build_number }}',
+            name: 'Release ${{ steps.build-number.outputs.build_number }}',
+            body: body,
+            generate_release_notes: true,
+          })
+          
+          return result.data.upload_url
 
     - name: Upload Asset 1
       if: inputs.asset-path1 != '' &&
@@ -395,7 +491,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        upload_url: ${{ steps.create_release.outputs.result }}
         asset_path: ${{ inputs.asset-path1 }}
         asset_name: ${{ inputs.asset-name1 }}
         asset_content_type: ${{ inputs.asset-content-type1 }}
@@ -407,7 +503,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        upload_url: ${{ steps.create_release.outputs.result }}
         asset_path: ${{ inputs.asset-path2 }}
         asset_name: ${{ inputs.asset-name2 }}
         asset_content_type: ${{ inputs.asset-content-type2 }}
@@ -419,7 +515,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        upload_url: ${{ steps.create_release.outputs.result }}
         asset_path: ${{ inputs.asset-path3 }}
         asset_name: ${{ inputs.asset-name3 }}
         asset_content_type: ${{ inputs.asset-content-type3 }}
@@ -428,7 +524,7 @@ jobs:
       if: inputs.deploy-web-assembly-path != '' &&
           env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true' &&
           inputs.deploy-web-assembly-repo == ''
-      uses: crazy-max/ghaction-github-pages@v2
+      uses: crazy-max/ghaction-github-pages@v3
       with:
         target_branch: gh-pages
         build_dir: ${{ inputs.deploy-web-assembly-path }}
@@ -440,7 +536,7 @@ jobs:
       if: inputs.deploy-web-assembly-path != '' &&
           env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true' &&
           inputs.deploy-web-assembly-repo != ''
-      uses: crazy-max/ghaction-github-pages@v2
+      uses: crazy-max/ghaction-github-pages@v3
       with:
         target_branch: gh-pages
         build_dir: ${{ inputs.deploy-web-assembly-path }}
@@ -449,3 +545,20 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GH_PAT: ${{ secrets.personal-token }}
+        
+    - name: Clear build cache
+      continue-on-error: true
+      uses: actions/github-script@v6
+      with:
+        script: |
+          github.rest.actions.deleteActionsCacheByKey({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            key: '${{ runner.os }}-build',
+          })
+            
+    - name: Cache build
+      uses: actions/cache@v3
+      with:
+        path: .
+        key: ${{ runner.os }}-build
