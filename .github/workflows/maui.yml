@@ -11,6 +11,15 @@ on:
             path:
               required: true
               type: string
+              
+            upload-to-google-play-track:
+              required: false
+              type: string
+              default: internal
+            upload-to-google-play-status:
+              required: false
+              type: string
+              default: inProgress
     
         secrets:
             service-account-json:
@@ -93,7 +102,7 @@ jobs:
                         owner: context.repo.owner,
                         repo: context.repo.repo,
                         tag_name: context.ref.replace('refs/tags/', ''),
-                        prerelease: true,
+                        prerelease: false,
                         generate_release_notes: true,
                       })
                       
@@ -179,8 +188,8 @@ jobs:
                   serviceAccountJsonPlainText: ${{ secrets.service-account-json }}
                   packageName: ${{ inputs.package-name }}
                   releaseFiles: ${{ inputs.package-name }}-Signed.aab
-                  track: internal
-                  status: draft
+                  track: ${{ inputs.upload-to-google-play-track }}
+                  status: ${{ inputs.upload-to-google-play-status }}
     
 #    publish-ios:
 #        name: Create iOS artifacts
