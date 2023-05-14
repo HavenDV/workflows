@@ -182,7 +182,7 @@ jobs:
     publish-android-to-google-play:
         name: Publish to Google Play
         needs: publish-android
-        environment: production
+        environment: android-production
         continue-on-error: true
         runs-on: ubuntu-latest
         steps:
