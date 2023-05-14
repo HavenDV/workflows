@@ -1,4 +1,4 @@
-﻿name: Build, test and publish MAUI application
+name: Build, test and publish MAUI application
 on:
     workflow_call:
         inputs:
@@ -11,23 +11,6 @@ on:
             path:
               required: true
               type: string
-              
-            upload-to-google-play-track:
-              required: false
-              type: string
-              default: internal
-            upload-to-google-play-status:
-              required: false
-              type: string
-              default: inProgress
-            upload-to-google-play-inAppUpdatePriority:
-              required: false
-              type: string
-              default: 0.0
-            upload-to-google-play-userFraction:
-              required: false
-              type: string
-              default: 1.0
     
         secrets:
             service-account-json:
@@ -36,7 +19,6 @@ on:
 jobs:
     build-and-test:
         name: Build and test
-        if: ${{ !startsWith(github.event.ref, 'refs/tags/v') }}
         strategy:
             matrix:
                 include:
@@ -93,7 +75,7 @@ jobs:
     
     create-github-release:
         name: Create Github Release
-        #needs: build-and-test
+        needs: build-and-test
         runs-on: ubuntu-latest
         continue-on-error: true
         if: startsWith(github.event.ref, 'refs/tags/v')
@@ -118,7 +100,7 @@ jobs:
                   
     publish-android:
         name: Create Android artifacts
-        #needs: build-and-test
+        needs: build-and-test
         runs-on: macos-latest
         continue-on-error: true
         if: startsWith(github.event.ref, 'refs/tags/v')
