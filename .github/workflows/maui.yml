@@ -196,10 +196,10 @@ jobs:
                   serviceAccountJsonPlainText: ${{ secrets.service-account-json }}
                   packageName: ${{ inputs.package-name }}
                   releaseFiles: ${{ inputs.package-name }}-Signed.aab
-                  track: ${{ inputs.upload-to-google-play-track }}
-                  status: ${{ inputs.upload-to-google-play-status }}
-                  inAppUpdatePriority: ${{ inputs.upload-to-google-play-inAppUpdatePriority }}
-                  userFraction: ${{ inputs.upload-to-google-play-userFraction }}
+                  track: ${{ vars.TRACK }}
+                  status: ${{ vars.STATUS }}
+                  inAppUpdatePriority: ${{ vars.IN_APP_UPDATE_PRIORITY }}
+                  userFraction: ${{ vars.USER_FRACTION }}
     
 #    publish-ios:
 #        name: Create iOS artifacts
