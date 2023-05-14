@@ -192,26 +192,26 @@ jobs:
                   
             - name: Deploy
               uses: r0adkll/upload-google-play@v1
-              if: vars.status == 'inProgress'
+              if: vars.STATUS == 'inProgress'
               with:
                   serviceAccountJsonPlainText: ${{ secrets.service-account-json }}
                   packageName: ${{ inputs.package-name }}
                   releaseFiles: ${{ inputs.package-name }}-Signed.aab
-                  track: ${{ vars.TRACK }}
-                  status: ${{ vars.STATUS }}
-                  inAppUpdatePriority: ${{ vars.IN_APP_UPDATE_PRIORITY }}
-                  userFraction: ${{ vars.USER_FRACTION }}
+                  track: ${{ vars.TRACK || 'production' }}
+                  status: ${{ vars.STATUS || 'completed' }}
+                  inAppUpdatePriority: ${{ vars.IN_APP_UPDATE_PRIORITY || '0' }}
+                  userFraction: ${{ vars.USER_FRACTION || '1' }}
                   
             - name: Deploy
               uses: r0adkll/upload-google-play@v1
-              if: vars.status != 'inProgress'
+              if: vars.STATUS != 'inProgress'
               with:
                   serviceAccountJsonPlainText: ${{ secrets.service-account-json }}
                   packageName: ${{ inputs.package-name }}
                   releaseFiles: ${{ inputs.package-name }}-Signed.aab
-                  track: ${{ vars.TRACK }}
-                  status: ${{ vars.STATUS }}
-                  inAppUpdatePriority: ${{ vars.IN_APP_UPDATE_PRIORITY }}
+                  track: ${{ vars.TRACK || 'production' }}
+                  status: ${{ vars.STATUS || 'completed' }}
+                  inAppUpdatePriority: ${{ vars.IN_APP_UPDATE_PRIORITY || '0' }}
     
 #    publish-ios:
 #        name: Create iOS artifacts
