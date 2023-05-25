@@ -13,6 +13,11 @@ on:
         type: string
         default: 7.0.x
         
+      publish:
+        required: false
+        type: boolean
+        default: true
+        
       generate-build-number:
         required: false
         type: boolean
@@ -424,7 +429,8 @@ jobs:
         path: ./**/*.nupkg
 
     - name: Publish to GitHub Packages
-      if: env.IS-PERSONAL-TOKEN-AVAILABLE == 'true'
+      if: inputs.publish &&
+          env.IS-PERSONAL-TOKEN-AVAILABLE == 'true'
       run: dotnet nuget push
         src\**.nupkg
         --skip-duplicate
@@ -432,7 +438,8 @@ jobs:
         --api-key ${{ secrets.personal-token }}
     
     - name: Publish to NuGet
-      if: env.PUBLISH-TO-NUGET == 'true' &&
+      if: inputs.publish &&
+          env.PUBLISH-TO-NUGET == 'true' &&
           env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true'
       env:
         PUBLISH: ${{ steps.compute-conventional-commits-publish-conditions.outputs.publish }}
@@ -443,7 +450,8 @@ jobs:
         --api-key ${{ secrets.nuget-key }}
         
     - name: VirusTotal Scan
-      if: env.SCAN-BY-VIRUSTOTAL == 'true' &&
+      if: inputs.publish &&
+          env.SCAN-BY-VIRUSTOTAL == 'true' &&
           inputs.asset-path1 != '' &&
           env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true'
       id: virustotal
@@ -457,7 +465,8 @@ jobs:
           ${{ inputs.asset-path3 }}
         
     - name: Create Release
-      if: inputs.create-release &&
+      if: inputs.publish &&
+          inputs.create-release &&
           inputs.generate-build-number &&
           env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true'
       id: create_release
@@ -485,7 +494,8 @@ jobs:
           return result.data.upload_url
 
     - name: Upload Asset 1
-      if: inputs.asset-path1 != '' &&
+      if: inputs.publish &&
+          inputs.asset-path1 != '' &&
           env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true'
       uses: actions/upload-release-asset@v1
       env:
@@ -497,7 +507,8 @@ jobs:
         asset_content_type: ${{ inputs.asset-content-type1 }}
 
     - name: Upload Asset 2
-      if: inputs.asset-path2 != '' &&
+      if: inputs.publish &&
+          inputs.asset-path2 != '' &&
           env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true'
       uses: actions/upload-release-asset@v1
       env:
@@ -509,7 +520,8 @@ jobs:
         asset_content_type: ${{ inputs.asset-content-type2 }}
 
     - name: Upload Asset 3
-      if: inputs.asset-path3 != '' &&
+      if: inputs.publish &&
+          inputs.asset-path3 != '' &&
           env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true'
       uses: actions/upload-release-asset@v1
       env:
@@ -521,7 +533,8 @@ jobs:
         asset_content_type: ${{ inputs.asset-content-type3 }}
 
     - name: Deploy WebAssembly to current repository GitHub Pages
-      if: inputs.deploy-web-assembly-path != '' &&
+      if: inputs.publish &&
+          inputs.deploy-web-assembly-path != '' &&
           env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true' &&
           inputs.deploy-web-assembly-repo == ''
       uses: crazy-max/ghaction-github-pages@v3
@@ -533,7 +546,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         
     - name: Deploy WebAssembly to other repository GitHub Pages
-      if: inputs.deploy-web-assembly-path != '' &&
+      if: inputs.publish &&
+          inputs.deploy-web-assembly-path != '' &&
           env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true' &&
           inputs.deploy-web-assembly-repo != ''
       uses: crazy-max/ghaction-github-pages@v3
