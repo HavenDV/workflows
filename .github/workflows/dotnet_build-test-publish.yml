@@ -103,6 +103,11 @@ on:
         type: boolean
         default: true
         
+      enable-caching:
+        required: false
+        type: boolean
+        default: true
+        
       run-tests:
         required: false
         type: boolean
@@ -224,6 +229,7 @@ jobs:
         fetch-depth: ${{ inputs.fetch-depth }}
         
     - name: Cache Nuget Packages
+      if: inputs.enable-caching
       uses: actions/cache@v3
       with:
         path: ~/.nuget/packages
