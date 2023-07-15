@@ -571,20 +571,3 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GH_PAT: ${{ secrets.personal-token }}
-        
-    - name: Clear build cache
-      continue-on-error: true
-      uses: actions/github-script@v6
-      with:
-        script: |
-          github.rest.actions.deleteActionsCacheByKey({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            key: '${{ runner.os }}-build',
-          })
-            
-    - name: Cache build
-      uses: actions/cache@v3
-      with:
-        path: .
-        key: ${{ runner.os }}-build
