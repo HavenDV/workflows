@@ -264,9 +264,6 @@ jobs:
       if: inputs.workloads != ''
       run: dotnet workload install
         ${{ inputs.workloads }}
-
-    - name: Restore workloads
-      run: dotnet workload restore
           
     - name: Setup additional .NET
       if: inputs.additional-dotnet-version != ''
