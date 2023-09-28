@@ -465,7 +465,7 @@ jobs:
       env:
         PUBLISH: ${{ steps.compute-conventional-commits-publish-conditions.outputs.publish }}
       run: dotnet nuget push
-        src\**.nupkg
+        **.nupkg
         --skip-duplicate
         --source https://api.nuget.org/v3/index.json
         --api-key ${{ secrets.nuget-key }}
