@@ -78,6 +78,11 @@ on:
         type: string
         default: ''
         
+      additional-command:
+        required: false
+        type: string
+        default: ''
+        
       configuration:
         required: false
         type: string
@@ -433,6 +438,10 @@ jobs:
         --configuration ${{ inputs.configuration }}
         --nologo
         ${{ inputs.additional-test-arguments }}
+    
+    - name: Run additional command
+      if: inputs.additional-command != ''
+      run: ${{ inputs.additional-command }}
         
     - name: Upload NuGet packages artifacts
       uses: actions/upload-artifact@v3
