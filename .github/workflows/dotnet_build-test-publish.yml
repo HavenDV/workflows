@@ -103,6 +103,16 @@ on:
         type: boolean
         default: false
         
+      custom-workload-macos:
+        required: false
+        type: string
+        default: ''
+        
+      custom-workload-windows:
+        required: false
+        type: string
+        default: ''
+        
       vs-prerelease:
         required: false
         type: boolean
@@ -276,6 +286,16 @@ jobs:
       with:
         dotnet-version: ${{ inputs.additional-dotnet-version }}
         dotnet-quality: ${{ inputs.dotnet-quality }}
+
+    - name: Install custom workload on macOS / Linux
+      if: inputs.custom-workload-macos != '' && runner.os != 'Windows'
+      run: curl -sSL ${{ inputs.custom-workload-macos }} | sudo bash
+      
+    - name: Install custom workload on Windows
+      if: inputs.custom-workload-windows != '' && runner.os == 'Windows'
+      run: |
+          Invoke-WebRequest '${{ inputs.custom-workload-windows }}' -OutFile 'workload-install.ps1'
+          ./workload-install.ps1
 
     - name: Install Tizen workload on macOS / Linux
       if: inputs.install-tizen && runner.os != 'Windows'
