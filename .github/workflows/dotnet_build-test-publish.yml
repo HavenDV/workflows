@@ -11,7 +11,7 @@ on:
       dotnet-version:
         required: false
         type: string
-        default: 7.0.x
+        default: 8.0.x
         
       publish:
         required: false
@@ -31,7 +31,7 @@ on:
       dotnet-quality:
         required: false
         type: string
-        default: 'ga'
+        default: 'preview'
         
       workloads:
         required: false
