@@ -121,7 +121,7 @@ on:
       enable-caching:
         required: false
         type: boolean
-        default: true
+        default: false
         
       run-tests:
         required: false
