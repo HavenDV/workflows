@@ -388,9 +388,10 @@ jobs:
         java-version: '11'
         
     - name: Setup Xcode
-      if: contains(inputs.workloads, 'maui') ||
+      if: runner.os == 'macOS' &&
+          (contains(inputs.workloads, 'maui') ||
           contains(inputs.workloads, 'ios') || 
-          contains(inputs.workloads, 'maccatalyst')
+          contains(inputs.workloads, 'maccatalyst'))
       uses: maxim-lobanov/setup-xcode@v1
       with:
         xcode-version: latest
