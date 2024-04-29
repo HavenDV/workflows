@@ -270,7 +270,7 @@ jobs:
         token: ${{ secrets.personal-token }}
           
     - name: Setup .NET
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: ${{ inputs.dotnet-version }}
         dotnet-quality: ${{ inputs.dotnet-quality }}
@@ -282,7 +282,7 @@ jobs:
           
     - name: Setup additional .NET
       if: inputs.additional-dotnet-version != ''
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: ${{ inputs.additional-dotnet-version }}
         dotnet-quality: ${{ inputs.dotnet-quality }}
@@ -473,7 +473,7 @@ jobs:
       run: ${{ inputs.additional-command }}
         
     - name: Upload NuGet packages artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: nuget-packages
         path: ./**/*.nupkg
