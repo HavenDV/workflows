@@ -21,7 +21,7 @@ on:
       generate-build-number:
         required: false
         type: boolean
-        default: true
+        default: false
         
       additional-dotnet-version:
         required: false
