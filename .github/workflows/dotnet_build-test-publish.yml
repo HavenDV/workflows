@@ -58,6 +58,11 @@ on:
         type: string
         default: ''
         
+      dynamic-env:
+        required: false
+        type: string
+        default: ''
+        
       fetch-depth:
         required: false
         type: number
@@ -210,6 +215,9 @@ on:
 
       api-key:
         required: false
+        
+      dynamic-secrets:
+        required: false
 
 jobs:
   build:
@@ -232,6 +240,8 @@ jobs:
         contains(join(github.event.commits.*.message), 'feat(') || 
         contains(join(github.event.commits.*.message), 'perf(') }}
       PUBLISH-TO-NUGET: ${{ !!secrets.nuget-key }}
+      DYNAMIC_SECRETS: ${{ !!secrets.dynamic-secrets }}
+      DYNAMIC_ENV: ${{ !!inputs.dynamic-env }}
       SCAN-BY-VIRUSTOTAL: ${{ !!secrets.virustotal-key }}
       IS-PERSONAL-TOKEN-AVAILABLE: ${{ !!secrets.personal-token }}
       TF_BUILD: ${{ inputs.install-tizen }}
@@ -242,6 +252,32 @@ jobs:
       uses: actions/checkout@v4
       with: 
         fetch-depth: ${{ inputs.fetch-depth }}
+        
+    - name: Loading repository variables to real env vars
+      if: env.DYNAMIC_ENV == 'true'
+      run: |
+        ## Iterate over the input variables
+        ## output them in a format so we can run and update the env variables 
+        ## making use of $GITHUB_ENV
+        echo "$ALLMYVARS" | jq -r 'keys[] as $k | "echo \"\($k)=\(.[$k] )\" >> $GITHUB_ENV"' > ./update_env.sh
+        chmod +x ./update_env.sh
+        ./update_env.sh
+      shell: bash
+      env:
+        ALLMYVARS: ${{ inputs.dynamic-env }}
+        
+    - name: Loading repository variables to real env vars
+      if: env.DYNAMIC_SECRETS == 'true'
+      run: |
+        ## Iterate over the input variables
+        ## output them in a format so we can run and update the env variables 
+        ## making use of $GITHUB_ENV
+        echo "$ALLMYVARS" | jq -r 'keys[] as $k | "echo \"\($k)=\(.[$k] )\" >> $GITHUB_ENV"' > ./update_env.sh
+        chmod +x ./update_env.sh
+        ./update_env.sh
+      shell: bash
+      env:
+        ALLMYVARS: ${{ secrets.dynamic-secrets }}
         
     - name: Cache Nuget Packages
       if: inputs.enable-caching
@@ -486,7 +522,7 @@ jobs:
         --skip-duplicate
         --source https://nuget.pkg.github.com/${{ inputs.github-packages-path }}/index.json
         --api-key ${{ secrets.personal-token }}
-    
+          
     - name: Publish to NuGet
       if: inputs.publish &&
           env.PUBLISH-TO-NUGET == 'true' &&
