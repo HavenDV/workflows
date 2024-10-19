@@ -71,7 +71,7 @@ on:
       conventional-commits-publish-conditions:
         required: false
         type: boolean
-        default: true
+        default: false
         
       project-path:
         required: false
