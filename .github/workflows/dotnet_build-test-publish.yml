@@ -523,6 +523,13 @@ jobs:
         --source https://nuget.pkg.github.com/${{ inputs.github-packages-path }}/index.json
         --api-key ${{ secrets.personal-token }}
           
+    - name: Clean up test artifacts
+      if: inputs.publish &&
+          env.PUBLISH-TO-NUGET == 'true' &&
+          env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true'
+      run: find . -path "*/EmptyFiles/*" -name "*.nupkg" -delete
+      shell: bash
+
     - name: Publish to NuGet
       if: inputs.publish &&
           env.PUBLISH-TO-NUGET == 'true' &&
