@@ -249,7 +249,7 @@ jobs:
     
     steps:
     - name: Getting code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with: 
         fetch-depth: ${{ inputs.fetch-depth }}
         
@@ -306,7 +306,7 @@ jobs:
         token: ${{ secrets.personal-token }}
           
     - name: Setup .NET
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
         dotnet-version: ${{ inputs.dotnet-version }}
         dotnet-quality: ${{ inputs.dotnet-quality }}
@@ -318,7 +318,7 @@ jobs:
           
     - name: Setup additional .NET
       if: inputs.additional-dotnet-version != ''
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
         dotnet-version: ${{ inputs.additional-dotnet-version }}
         dotnet-quality: ${{ inputs.dotnet-quality }}
@@ -509,7 +509,7 @@ jobs:
       run: ${{ inputs.additional-command }}
         
     - name: Upload NuGet packages artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: nuget-packages-${{ inputs.os }}
         path: ./**/*.nupkg
