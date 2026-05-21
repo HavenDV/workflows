@@ -224,6 +224,7 @@ jobs:
     runs-on: ${{ inputs.os }}
     name: Build, test and publish
     env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       # Disable the .NET logo in the console output.
       DOTNET_NOLOGO: true
       # Disable the .NET first time experience to skip caching NuGet packages and speed up the build.
