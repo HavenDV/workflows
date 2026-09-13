@@ -17,6 +17,16 @@ on:
         required: false
         type: boolean
         default: true
+
+      nuget-trusted-publishing:
+        required: false
+        type: boolean
+        default: false
+
+      nuget-user:
+        required: false
+        type: string
+        default: havendv
         
       generate-build-number:
         required: false
@@ -240,7 +250,7 @@ jobs:
         contains(join(github.event.commits.*.message), 'fix(') || 
         contains(join(github.event.commits.*.message), 'feat(') || 
         contains(join(github.event.commits.*.message), 'perf(') }}
-      PUBLISH-TO-NUGET: ${{ !!secrets.nuget-key }}
+      PUBLISH-TO-NUGET: ${{ inputs.nuget-trusted-publishing || !!secrets.nuget-key }}
       DYNAMIC_SECRETS: ${{ !!secrets.dynamic-secrets }}
       DYNAMIC_ENV: ${{ !!inputs.dynamic-env }}
       SCAN-BY-VIRUSTOTAL: ${{ !!secrets.virustotal-key }}
@@ -531,6 +541,15 @@ jobs:
       run: find . -path "*/EmptyFiles/*" -name "*.nupkg" -delete
       shell: bash
 
+    - name: NuGet login
+      if: inputs.publish &&
+          inputs.nuget-trusted-publishing &&
+          env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true'
+      id: nuget_login
+      uses: NuGet/login@v1
+      with:
+        user: ${{ inputs.nuget-user }}
+
     - name: Publish to NuGet
       if: inputs.publish &&
           env.PUBLISH-TO-NUGET == 'true' &&
@@ -541,7 +560,7 @@ jobs:
         **.nupkg
         --skip-duplicate
         --source https://api.nuget.org/v3/index.json
-        --api-key ${{ secrets.nuget-key }}
+        --api-key ${{ steps.nuget_login.outputs.NUGET_API_KEY || secrets.nuget-key }}
         
     - name: VirusTotal Scan
       if: inputs.publish &&
