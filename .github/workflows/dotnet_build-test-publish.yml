@@ -204,9 +204,6 @@ on:
         default: ''
         
     secrets:
-      nuget-key:
-        required: false
-        
       virustotal-key:
         required: false
 
@@ -240,7 +237,6 @@ jobs:
         contains(join(github.event.commits.*.message), 'fix(') || 
         contains(join(github.event.commits.*.message), 'feat(') || 
         contains(join(github.event.commits.*.message), 'perf(') }}
-      PUBLISH-TO-NUGET: ${{ !!secrets.nuget-key }}
       DYNAMIC_SECRETS: ${{ !!secrets.dynamic-secrets }}
       DYNAMIC_ENV: ${{ !!inputs.dynamic-env }}
       SCAN-BY-VIRUSTOTAL: ${{ !!secrets.virustotal-key }}
@@ -524,25 +520,6 @@ jobs:
         --source https://nuget.pkg.github.com/${{ inputs.github-packages-path }}/index.json
         --api-key ${{ secrets.personal-token }}
           
-    - name: Clean up test artifacts
-      if: inputs.publish &&
-          env.PUBLISH-TO-NUGET == 'true' &&
-          env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true'
-      run: find . -path "*/EmptyFiles/*" -name "*.nupkg" -delete
-      shell: bash
-
-    - name: Publish to NuGet
-      if: inputs.publish &&
-          env.PUBLISH-TO-NUGET == 'true' &&
-          env.CONVENTIONAL-COMMITS-PUBLISH-CONDITIONS == 'true'
-      env:
-        PUBLISH: ${{ steps.compute-conventional-commits-publish-conditions.outputs.publish }}
-      run: dotnet nuget push
-        **.nupkg
-        --skip-duplicate
-        --source https://api.nuget.org/v3/index.json
-        --api-key ${{ secrets.nuget-key }}
-        
     - name: VirusTotal Scan
       if: inputs.publish &&
           env.SCAN-BY-VIRUSTOTAL == 'true' &&
