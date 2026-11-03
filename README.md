@@ -7,11 +7,23 @@ jobs:
   build-test-publish:
     name: Build, test and publish
     uses: HavenDV/workflows/.github/workflows/dotnet_build-test-publish.yml@main
-    secrets:
-      nuget-key: ${{ secrets.NUGET_KEY }}
     with:
       asset-path1: src/installers/UpworkPdfGenerator.Installers.Wpf.NetFramework/UpworkPdfGenerator.msi
       asset-name1: UpworkPdfGenerator.msi
+
+  nuget-trusted-publish:
+    name: NuGet trusted publishing
+    needs: build-test-publish
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: tryAGI/workflows/.github/actions/nuget-publish@main
+        with:
+          user: havendv
+          artifact-pattern: nuget-packages-ubuntu-latest   # nuget-packages-<os input>
 ```
 
 # Explanation
@@ -21,7 +33,11 @@ It is based on the [Conventional Commits specification](https://www.conventional
 will only release new releases if they contain fix/feat/perf commit types.  
 It automatically generates a build number (BUILD_NUMBER environment variable).  
 It also automatically generates Package Release Notes based on the latest commits (PACKAGE_RELEASE_NOTES environment variable).  
-Requires a nuget-key secret that will be able to load your NuGet packages.  
+It uploads the packages as the `nuget-packages-<os>` artifact; it does not push them to nuget.org itself.
+nuget.org [trusted publishing](https://learn.microsoft.com/nuget/nuget-org/trusted-publishing) matches the
+policy against the *caller's* workflow file, so the push runs in a caller job with
+`tryAGI/workflows/.github/actions/nuget-publish` (see the example above). Each repository needs a trusted
+publishing policy on nuget.org for that workflow file. There is no NuGet API key secret.  
 
 ### Inputs
 | name                                        | type    | default             |
@@ -59,7 +75,6 @@ Requires a nuget-key secret that will be able to load your NuGet packages.
 ### Secrets
 | name                                        | type    | default             |
 |---------------------------------------------|---------|---------------------|
-| nuget-key                                   | string  | ''                  |
 | personal-token                              | string  | ''                  |
 
 # Contacts
